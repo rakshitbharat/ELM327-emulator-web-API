@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+venv/
+.env
+.env.local
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+
+# IDE
+.vscode/
+.idea/
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Local development
+instance/
+.webassets-cache
+
+# macOS
+.DS_Store
+
+# Docker
+docker-compose.yml
+docker-compose.override.yml 
