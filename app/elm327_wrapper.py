@@ -14,7 +14,7 @@ class ELM327Wrapper:
         try:
             if protocol.lower() != 'auto':
                 self.emulator.set_protocol(protocol.upper())
-            return self.emulator.command_handler(command)
+            return self.emulator.handle_request(command)
         finally:
             self.last_execution_time = time.time() - start
 

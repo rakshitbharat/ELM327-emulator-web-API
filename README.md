@@ -162,4 +162,4 @@ This project is licensed under the same terms as the original ELM327-emulator pr
 
 ---
 
-Made with ❤️ by [rakshitbharat] | [Documentation](https://github.com/rakshitbharat/ELM327-emulator-web-API/wiki) | [Report Bug](https://github.com/rakshitbharat/ELM327-emulator-web-API/issues)
+Made with ❤️ by [rakshitbharat]
