@@ -1,39 +1,25 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from .elm327_wrapper import ELM327Emulator
+from fastapi import FastAPI
+from app.elm327_wrapper import ELM327Wrapper
+from mangum import Mangum
 
-app = FastAPI(
-    title="ELM327 Emulator API",
-    description="Web API for ELM327 emulator",
-    version="1.0.0"
-)
+app = FastAPI()
+elm327 = ELM327Wrapper()
 
-class CommandRequest(BaseModel):
-    command: str
-
-class CommandResponse(BaseModel):
-    response: str
-    status: str
-
-elm = ELM327Emulator()
-
-@app.post("/command", response_model=CommandResponse)
-async def send_command(request: CommandRequest):
-    """
-    Send an AT command to the ELM327 emulator
-    """
+@app.post("/api/v1/command")
+async def send_command(command: dict):
     try:
-        response = elm.process_command(request.command)
-        return CommandResponse(
-            response=response,
-            status="success"
-        )
+        result = elm327.process_command(command['command'], command.get('protocol', 'auto'))
+        return {
+            "status": "success",
+            "response": result,
+            "execution_time": elm327.last_execution_time
+        }
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        return {
+            "status": "error",
+            "error": str(e),
+            "code": 400
+        }
 
-@app.get("/status")
-async def get_status():
-    """
-    Get the current status of the emulator
-    """
-    return {"status": "running", "version": elm.get_version()} 
+# Vercel requires a handler for serverless functions
+handler = Mangum(app) 
