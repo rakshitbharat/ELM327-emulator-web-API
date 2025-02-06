@@ -2,7 +2,6 @@
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![License](https://img.shields.io/github/license/yourusername/elm327-web-emulator?style=for-the-badge)](LICENSE)
 
 A modern web API interface for automotive diagnostics, wrapping the [ELM327-emulator](https://github.com/Ircama/ELM327-emulator) project with RESTful capabilities.
 
@@ -27,8 +26,8 @@ graph LR
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/elm327-web-emulator.git
-cd elm327-web-emulator
+git clone https://github.com/rakshitbharat/ELM327-emulator-web-API.git
+cd ELM327-emulator-web-API
 
 # Install dependencies
 pip install -r requirements.txt
@@ -39,7 +38,7 @@ uvicorn app.main:app --reload
 
 Visit the interactive API docs: http://localhost:8000/docs
 
-## API Endpoints 📡
+## API Endpoints ��
 
 ### Send Command
 
@@ -99,12 +98,8 @@ docker run -d -p 8000:8000 elm327-emulator
 
 ## Contributing 🤝
 
-Contributions welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-## License 📄
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Contributions welcome! This is an open source project free to use and modify.
 
 ---
 
-Made with ❤️ by [Your Name] | [Documentation](https://github.com/yourusername/elm327-web-emulator/wiki) | [Report Bug](https://github.com/yourusername/elm327-web-emulator/issues)
+Made with ❤️ by [rakshitbharat] | [Documentation](https://github.com/rakshitbharat/ELM327-emulator-web-API/wiki) | [Report Bug](https://github.com/rakshitbharat/ELM327-emulator-web-API/issues)
