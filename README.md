@@ -22,12 +22,23 @@ graph LR
 - 📦 Docker container support
 - 📈 Built-in request validation
 
+## Requirements 📋
+
+- Python 3.6 or higher
+- Docker (optional, for containerized deployment)
+
 ## Quick Start 🛠️
+
+### Local Development
 
 ```bash
 # Clone repository
 git clone https://github.com/rakshitbharat/ELM327-emulator-web-API.git
 cd ELM327-emulator-web-API
+
+# Create and activate virtual environment (recommended)
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
@@ -36,9 +47,19 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
+### Docker Deployment
+
+```bash
+# Build image
+docker build -t elm-api .
+
+# Run container
+docker run -p 8000:8000 elm-api
+```
+
 Visit the interactive API docs: http://localhost:8000/docs
 
-## API Endpoints ��
+## API Endpoints 🌐
 
 ### Send Command
 
@@ -73,67 +94,19 @@ Visit the interactive API docs: http://localhost:8000/docs
 }
 ```
 
-## Development 🧪
+## Dependencies 📦
 
-```bash
-# Run tests
-pytest tests/
+Core dependencies:
 
-# Format code
-black .
+- FastAPI (0.83.0)
+- Uvicorn (0.16.0)
+- ELM327-emulator
+- Python-dotenv (0.20.0)
+- Pydantic (1.x)
+- Mangum (0.12.0)
+- Boto3 (1.9+)
 
-# Check code quality
-flake8
-```
-
-## Deployment Options 🚢
-
-### Local Development
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Start development server
-uvicorn app.main:app --reload
-```
-
-### Vercel Deployment
-
-1. Install Vercel CLI
-
-```bash
-npm install -g vercel
-```
-
-2. Deploy to Vercel
-
-```bash
-# Login to Vercel (if first time)
-vercel login
-
-# Deploy
-vercel
-vercel deploy --prod
-```
-
-3. Environment Setup on Vercel:
-
-- Set Python version to 3.9+ in project settings
-- Add build command: `bash build.sh`
-- Keep output directory blank
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Frakshitbharat%2FELM327-emulator-web-API)
-
-### Docker Deployment
-
-```bash
-# Build image
-docker build -t elm-api .
-
-# Run container
-docker run -d -p 8000:8000 elm-api
-```
+For a complete list of dependencies, see `requirements.txt`.
 
 ## Project Structure 📂
 
@@ -142,10 +115,9 @@ docker run -d -p 8000:8000 elm-api
 │   ├── __init__.py
 │   ├── main.py         # FastAPI application entrypoint
 │   └── elm327_wrapper.py # ELM327 emulator wrapper
-├── vercel.json         # Vercel configuration
+├── Dockerfile          # Docker configuration
 ├── requirements.txt    # Python dependencies
-├── build.sh            # Build script for Vercel
-└── README.md           # Project documentation
+└── README.md          # Project documentation
 ```
 
 ## Environment Setup ⚙️
@@ -159,33 +131,35 @@ API_PORT=8000
 API_RELOAD=True
 ```
 
+## Compatibility Notes 📝
+
+- The application is tested with Python 3.6
+- All dependencies are pinned to versions compatible with Python 3.6
+- The ELM327 emulator is configured in batch mode for better performance
+- Docker deployment uses Python 3.6-slim base image
+
 ## Contributing 🤝
 
 Contributions welcome! This is an open source project free to use and modify.
 
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## Troubleshooting 🔧
+
+Common issues and solutions:
+
+1. **Import Errors**: Make sure you're using Python 3.6 or higher
+2. **Docker Issues**: Ensure Docker is running and port 8000 is available
+3. **Dependency Conflicts**: Use a virtual environment for clean installation
+
+## License 📄
+
+This project is licensed under the same terms as the original ELM327-emulator project.
+
 ---
 
 Made with ❤️ by [rakshitbharat] | [Documentation](https://github.com/rakshitbharat/ELM327-emulator-web-API/wiki) | [Report Bug](https://github.com/rakshitbharat/ELM327-emulator-web-API/issues)
-
-## Installation 💻
-
-```bash
-# Verify Python version (3.6+ required)
-python3 --version
-
-# Install package
-python3 -m pip install elm327-emulator==3.0.3
-
-# Install project dependencies
-pip install -r requirements.txt
-```
-
-## Docker Installation 🐳
-
-```bash
-# Build with Python 3.6+
-docker build -t elm-api .
-
-# Run container
-docker run -p 8000:8000 elm-api
-```
