@@ -61,12 +61,13 @@ Visit the interactive API docs: http://localhost:8000/docs
 
 ## API Endpoints 🌐
 
-### Send Command
+### 1. Send OBD-II Command
 
 `POST /api/v1/command`
 
-**Request:**
+Send raw OBD-II commands to the emulator.
 
+**Request:**
 ```json
 {
   "command": "ATZ",
@@ -75,7 +76,6 @@ Visit the interactive API docs: http://localhost:8000/docs
 ```
 
 **Success Response:**
-
 ```json
 {
   "status": "success",
@@ -84,15 +84,82 @@ Visit the interactive API docs: http://localhost:8000/docs
 }
 ```
 
-**Error Response:**
+### 2. Set ECU Parameter Value
 
+`POST /api/v1/ecu/set-value`
+
+Set a specific ECU parameter value in the emulator.
+
+**Request:**
 ```json
 {
-  "status": "error",
-  "error": "Invalid command format",
-  "code": 400
+  "parameter": "engine_rpm",
+  "value": 2500
 }
 ```
+
+**Success Response:**
+```json
+{
+  "status": "success",
+  "message": "Value set for engine_rpm"
+}
+```
+
+### 3. Get All ECU Values
+
+`GET /api/v1/ecu/values`
+
+Get all current ECU parameter values.
+
+**Success Response:**
+```json
+{
+  "status": "success",
+  "values": {
+    "engine_rpm": 2500,
+    "vehicle_speed": 60,
+    "throttle_position": 45,
+    "engine_coolant_temp": 90,
+    "engine_load": 65,
+    "fuel_level": 75,
+    "intake_manifold_pressure": 101,
+    "timing_advance": 12,
+    "oxygen_sensor_voltage": 0.8,
+    "mass_air_flow": 8.2
+  }
+}
+```
+
+### 4. Get Specific ECU Value
+
+`GET /api/v1/ecu/value/{parameter}`
+
+Get a specific ECU parameter value.
+
+**Success Response:**
+```json
+{
+  "status": "success",
+  "parameter": "engine_rpm",
+  "value": 2500
+}
+```
+
+## Available ECU Parameters
+
+The following parameters can be controlled and monitored:
+
+- `engine_rpm`: Engine RPM (0-8000)
+- `vehicle_speed`: Vehicle Speed in km/h (0-255)
+- `throttle_position`: Throttle Position % (0-100)
+- `engine_coolant_temp`: Engine Coolant Temperature in °C (-40 to 215)
+- `engine_load`: Calculated Engine Load % (0-100)
+- `fuel_level`: Fuel Tank Level % (0-100)
+- `intake_manifold_pressure`: Intake Manifold Pressure in kPa (0-255)
+- `timing_advance`: Timing Advance in degrees (-64 to 63.5)
+- `oxygen_sensor_voltage`: O2 Sensor Voltage in volts (0-1.275)
+- `mass_air_flow`: Mass Air Flow Rate in grams/sec (0-655.35)
 
 ## Dependencies 📦
 
