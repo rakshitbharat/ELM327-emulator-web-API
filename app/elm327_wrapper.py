@@ -1,89 +1,97 @@
-import re
-from typing import Optional
+import logging
+from typing import Optional, Union, List, Dict
+from elm.elm import Elm
+import time
 
-class ELM327Emulator:
+class ELM327Wrapper:
+    # Define supported parameters and their ranges
+    SUPPORTED_PARAMETERS = {
+        'engine_rpm': (0, 8000),
+        'vehicle_speed': (0, 255),
+        'throttle_position': (0, 100),
+        'engine_coolant_temp': (-40, 215),
+        'engine_load': (0, 100),
+        'fuel_level': (0, 100),
+        'intake_manifold_pressure': (0, 255),
+        'timing_advance': (-64, 63.5),
+        'oxygen_sensor_voltage': (0, 1.275),
+        'mass_air_flow': (0, 655.35)
+    }
+
     def __init__(self):
-        self.version = "1.0"
-        self.echo = True
-        self.linefeed = True
-        self.spaces = True
-        self.header = False
-        self.memory = {}
-        self.protocol = "0"  # Auto
-        self._initialize()
+        # Configure logging
+        self.logger = logging.getLogger('elm327')
+        self.logger.setLevel(logging.INFO)
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        self.logger.addHandler(handler)
 
-    def _initialize(self):
-        """Initialize the emulator with default settings"""
-        self.memory = {
-            "AT@1": "OBDII to RS232 Interpreter",
-            "AT@2": "ELM327 v1.5",
-            "AT@3": "ELM327 emulator",
-            "ATI": "ELM327 v1.5",
-            "ATZ": "ELM327 v1.5",
-        }
+        # Initialize emulator
+        self.emulator = Elm(serial_port=None, batch_mode=True)
+        self.emulator.logger = self.logger
+        self.last_execution_time = 0.0
 
-    def process_command(self, command: str) -> str:
-        """Process an AT command and return the response"""
-        command = command.upper().strip()
+        # Initialize parameter values dictionary
+        self._parameter_values = {param: min_val for param, (min_val, _) in self.SUPPORTED_PARAMETERS.items()}
+
+    def _validate_parameter(self, parameter: str, value: float) -> bool:
+        """Validate if parameter exists and value is within allowed range"""
+        if parameter not in self.SUPPORTED_PARAMETERS:
+            self.logger.error(f"Unsupported parameter: {parameter}")
+            return False
         
-        # Handle basic AT commands
-        if command in self.memory:
-            return self.memory[command]
+        min_val, max_val = self.SUPPORTED_PARAMETERS[parameter]
+        if not min_val <= value <= max_val:
+            self.logger.error(f"Value {value} out of range [{min_val}, {max_val}] for {parameter}")
+            return False
         
-        # AT Z - Reset
-        if command == "ATZ":
-            self._initialize()
-            return "ELM327 v1.5"
-        
-        # AT E0/E1 - Echo off/on
-        if command in ["ATE0", "ATE1"]:
-            self.echo = command == "ATE1"
-            return "OK"
-        
-        # AT L0/L1 - Linefeeds off/on
-        if command in ["ATL0", "ATL1"]:
-            self.linefeed = command == "ATL1"
-            return "OK"
-        
-        # AT S0/S1 - Spaces off/on
-        if command in ["ATS0", "ATS1"]:
-            self.spaces = command == "ATS1"
-            return "OK"
-        
-        # AT H0/H1 - Headers off/on
-        if command in ["ATH0", "ATH1"]:
-            self.header = command == "ATH1"
-            return "OK"
-        
-        # AT SP - Set Protocol
-        if command.startswith("ATSP"):
-            protocol = command[4:]
-            if protocol in ["0", "1", "2", "3", "4", "5", "6"]:
-                self.protocol = protocol
-                return "OK"
-        
-        # Handle OBD-II PIDs (simulated responses)
-        if re.match(r"^[0-9A-F]{2}[0-9A-F]{2}$", command):
-            mode = command[:2]
-            pid = command[2:]
+        return True
+
+    def process_command(self, command: str, protocol: str = 'auto') -> str:
+        """Process an OBD command through the ELM327 emulator"""
+        start = time.time()
+        try:
+            if protocol.lower() != 'auto':
+                # Set protocol using AT SP command
+                protocol_response = self.emulator.handle_request(f"AT SP {protocol}")
+                if "OK" not in protocol_response:
+                    return f"Error setting protocol: {protocol_response}"
             
-            # Mode 01 - Current Data
-            if mode == "01":
-                if pid == "00":  # PIDs supported
-                    return "41 00 BE 3E B0 11"
-                elif pid == "0C":  # Engine RPM
-                    return "41 0C 1A F8"  # ~1725 RPM
-                elif pid == "0D":  # Vehicle speed
-                    return "41 0D 45"  # ~69 km/h
+            # Let the emulator handle the command
+            response = self.emulator.handle_request(command)
+            return response if isinstance(response, str) else "\n".join(response)
+        finally:
+            self.last_execution_time = time.time() - start
+
+    def set_ecu_value(self, parameter: str, value: float) -> bool:
+        """Set an ECU parameter value"""
+        if not self._validate_parameter(parameter, value):
+            return False
             
-            # Mode 09 - Vehicle Information
-            if mode == "09":
-                if pid == "02":  # VIN
-                    return "49 02 01 31 47 31 4A 43 35 34 34 34 52 37 32 31 32 33 34 35 36"
-        
-        # Unknown command
-        return "?"
+        try:
+            # Store the value internally
+            self._parameter_values[parameter] = value
+            return True
+        except Exception as e:
+            self.logger.error(f"Error setting parameter {parameter}: {str(e)}")
+            return False
+
+    def get_ecu_value(self, parameter: str) -> Optional[float]:
+        """Get an ECU parameter value"""
+        if parameter not in self.SUPPORTED_PARAMETERS:
+            self.logger.error(f"Unsupported parameter: {parameter}")
+            return None
+            
+        try:
+            return self._parameter_values.get(parameter)
+        except Exception as e:
+            self.logger.error(f"Error getting parameter {parameter}: {str(e)}")
+            return None
+
+    def get_all_values(self) -> Dict[str, float]:
+        """Get all ECU parameter values"""
+        return dict(self._parameter_values)
 
     def get_version(self) -> str:
         """Get the emulator version"""
-        return self.version 
+        return self.emulator.get_version()
