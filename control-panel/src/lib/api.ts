@@ -21,6 +21,7 @@ export const api = {
     return response.data;
   },
   resetValues: async () => {
-    // Implement the reset values API call if available
+    const response = await apiClient.post('/api/v1/ecu/reset');
+    return response.data;
   },
 };

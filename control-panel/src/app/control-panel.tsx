@@ -1,13 +1,11 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { api } from '@/lib/api';
 import { ParameterControl } from '@/components/ParameterControl';
-import { APITester } from '@/components/APITester';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface Values {
   engine_rpm: number;
@@ -77,49 +75,44 @@ function ControlPanel() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="container mx-auto py-8 px-4">
-        <Card className="mb-8 shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-4xl font-bold text-center">ECU Simulator</CardTitle>
-            <CardDescription className="text-center text-gray-600">
-              Control and monitor ECU parameters through OBD-II commands
-            </CardDescription>
-          </CardHeader>
-        </Card>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">ECU Simulator Dashboard</h1>
+          <p className="text-muted-foreground mt-2">Monitor and control ECU parameters in real-time</p>
+        </div>
+        <Button 
+          onClick={handleReset}
+          variant="outline"
+          className="hover:bg-destructive hover:text-destructive-foreground"
+        >
+          Reset All Values
+        </Button>
+      </div>
 
-        {error && (
-          <Alert className="mb-6">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
-        <Tabs defaultValue="control-panel" className="w-full space-y-6">
-          <div className="flex items-center justify-between">
-            <TabsList className="grid w-[400px] grid-cols-2">
-              <TabsTrigger value="control-panel">Control Panel</TabsTrigger>
-              <TabsTrigger value="api-tester">API Tester</TabsTrigger>
-            </TabsList>
-            <Button onClick={handleReset} className="bg-blue-500 text-white hover:bg-blue-600">
-              Reset All Values
-            </Button>
-          </div>
-          <TabsContent value="control-panel" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Object.entries(values).map(([parameter, value]) => (
-                <ParameterControl
-                  key={parameter}
-                  parameter={parameter as keyof Values}
-                  value={value}
-                  onChange={handleValueChange}
-                />
-              ))}
-            </div>
-          </TabsContent>
-          <TabsContent value="api-tester">
-            <APITester onUpdate={fetchValues} />
-          </TabsContent>
-        </Tabs>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {Object.entries(values).map(([parameter, value]) => (
+          <Card key={parameter} className="shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg capitalize">
+                {parameter.replace(/_/g, ' ')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ParameterControl
+                parameter={parameter as keyof Values}
+                value={value}
+                onChange={handleValueChange}
+              />
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );
