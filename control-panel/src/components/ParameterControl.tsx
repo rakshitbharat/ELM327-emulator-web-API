@@ -4,9 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Values } from '@/app/control-panel';
 
 interface ParameterControlProps {
-  parameter: keyof Values;
+  parameter: string;
   value: number;
-  onChange: (parameter: keyof Values, value: number) => void;
+  onChange: (parameter: string, value: number) => void;
 }
 
 export function ParameterControl({ parameter, value, onChange }: ParameterControlProps) {

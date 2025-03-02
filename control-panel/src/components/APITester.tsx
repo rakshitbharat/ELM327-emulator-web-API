@@ -33,7 +33,7 @@ export function APITester({ onUpdate }: APITesterProps) {
       <CardContent className="space-y-4">
         <Input
           value={command}
-          onChange={(e) => setCommand(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCommand(e.target.value)}
           placeholder="Enter OBD-II command"
         />
         <Button onClick={handleSendCommand}>Send Command</Button>

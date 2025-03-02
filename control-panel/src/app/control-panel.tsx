@@ -89,7 +89,7 @@ function ControlPanel() {
         </Card>
 
         {error && (
-          <Alert variant="destructive" className="mb-6">
+          <Alert className="mb-6">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
@@ -100,7 +100,7 @@ function ControlPanel() {
               <TabsTrigger value="control-panel">Control Panel</TabsTrigger>
               <TabsTrigger value="api-tester">API Tester</TabsTrigger>
             </TabsList>
-            <Button onClick={handleReset} variant="outline">
+            <Button onClick={handleReset}>
               Reset All Values
             </Button>
           </div>
@@ -109,7 +109,7 @@ function ControlPanel() {
               {Object.entries(values).map(([parameter, value]) => (
                 <ParameterControl
                   key={parameter}
-                  parameter={parameter}
+                  parameter={parameter as keyof Values}
                   value={value}
                   onChange={handleValueChange}
                 />
