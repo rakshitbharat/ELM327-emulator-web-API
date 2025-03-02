@@ -1,22 +1,23 @@
-import { useState } from 'react';
-import { 
-    Box, 
-    Paper, 
-    TextField, 
-    Button, 
-    Typography, 
+import { useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import {
     Table,
     TableBody,
     TableCell,
-    TableContainer,
     TableHead,
+    TableHeader,
     TableRow,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel
-} from '@mui/material';
-import { api } from '../services/api';
+} from "@/components/ui/table"
+import { api } from '../services/api'
 
 const commonPIDs = {
     'ATZ': 'Reset All',
@@ -32,24 +33,24 @@ const commonPIDs = {
     '010E': 'Timing Advance',
     '0114': 'O2 Sensor Voltage',
     '0110': 'Mass Air Flow'
-};
+}
 
 export const APITester = () => {
-    const [command, setCommand] = useState('');
-    const [protocol, setProtocol] = useState('auto');
-    const [responses, setResponses] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [command, setCommand] = useState('')
+    const [protocol, setProtocol] = useState('auto')
+    const [responses, setResponses] = useState([])
+    const [loading, setLoading] = useState(false)
 
     const handleSendCommand = async () => {
         try {
-            setLoading(true);
-            const result = await api.sendCommand(command, protocol);
+            setLoading(true)
+            const result = await api.sendCommand(command, protocol)
             
             // Parse the response into bytes if possible
-            let bytesArray = [];
+            let bytesArray = []
             if (result.response) {
                 // Split the response by spaces and convert to bytes
-                bytesArray = result.response.split(' ').map(hex => parseInt(hex, 16));
+                bytesArray = result.response.split(' ').map(hex => parseInt(hex, 16))
             }
 
             const newResponse = {
@@ -58,107 +59,103 @@ export const APITester = () => {
                 rawResponse: result.response,
                 bytesArray,
                 executionTime: result.execution_time
-            };
+            }
 
-            setResponses(prev => [newResponse, ...prev]);
+            setResponses(prev => [newResponse, ...prev])
         } catch (error) {
-            console.error('Error sending command:', error);
+            console.error('Error sending command:', error)
             const errorResponse = {
                 timestamp: new Date().toISOString(),
                 command,
                 rawResponse: `Error: ${error.message}`,
                 bytesArray: [],
                 executionTime: 0
-            };
-            setResponses(prev => [errorResponse, ...prev]);
+            }
+            setResponses(prev => [errorResponse, ...prev])
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
-    };
+    }
 
-    const handlePIDSelect = (event) => {
-        setCommand(event.target.value);
-    };
+    const handlePIDSelect = (value) => {
+        setCommand(value)
+    }
 
     return (
-        <Box sx={{ p: 3 }}>
-            <Typography variant="h5" gutterBottom>
-                OBD-II Command Tester
-            </Typography>
-
-            <Paper sx={{ p: 2, mb: 2 }}>
-                <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                    <FormControl fullWidth>
-                        <InputLabel>Common PIDs</InputLabel>
-                        <Select
-                            value=""
-                            label="Common PIDs"
-                            onChange={handlePIDSelect}
-                            displayEmpty
-                        >
-                            {Object.entries(commonPIDs).map(([pid, description]) => (
-                                <MenuItem key={pid} value={pid}>
-                                    {pid} - {description}
-                                </MenuItem>
-                            ))}
+        <div className="space-y-6">
+            <Card>
+                <CardHeader>
+                    <CardTitle>OBD-II Command Tester</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="grid w-full gap-4">
+                        <Select onValueChange={handlePIDSelect}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select Common PID" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {Object.entries(commonPIDs).map(([pid, description]) => (
+                                    <SelectItem key={pid} value={pid}>
+                                        {pid} - {description}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
                         </Select>
-                    </FormControl>
-                </Box>
 
-                <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                    <TextField
-                        fullWidth
-                        label="OBD-II Command"
-                        value={command}
-                        onChange={(e) => setCommand(e.target.value)}
-                        placeholder="Enter command (e.g., ATZ, 010C)"
-                    />
-                    <TextField
-                        sx={{ width: '200px' }}
-                        label="Protocol"
-                        value={protocol}
-                        onChange={(e) => setProtocol(e.target.value)}
-                        placeholder="auto"
-                    />
-                    <Button 
-                        variant="contained" 
-                        onClick={handleSendCommand}
-                        disabled={loading || !command}
-                    >
-                        Send
-                    </Button>
-                </Box>
-            </Paper>
+                        <div className="flex gap-4">
+                            <Input
+                                placeholder="Enter command (e.g., ATZ, 010C)"
+                                value={command}
+                                onChange={(e) => setCommand(e.target.value)}
+                            />
+                            <Input
+                                className="max-w-[200px]"
+                                placeholder="Protocol (auto)"
+                                value={protocol}
+                                onChange={(e) => setProtocol(e.target.value)}
+                            />
+                            <Button 
+                                onClick={handleSendCommand}
+                                disabled={loading || !command}
+                            >
+                                Send
+                            </Button>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
 
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Timestamp</TableCell>
-                            <TableCell>Command</TableCell>
-                            <TableCell>Raw Response</TableCell>
-                            <TableCell>Bytes Array</TableCell>
-                            <TableCell>Execution Time (s)</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {responses.map((response, index) => (
-                            <TableRow key={index}>
-                                <TableCell>{new Date(response.timestamp).toLocaleTimeString()}</TableCell>
-                                <TableCell>{response.command}</TableCell>
-                                <TableCell>{response.rawResponse}</TableCell>
-                                <TableCell>
-                                    {response.bytesArray.length > 0 
-                                        ? `[${response.bytesArray.join(', ')}]`
-                                        : 'N/A'
-                                    }
-                                </TableCell>
-                                <TableCell>{response.executionTime?.toFixed(3)}</TableCell>
+            <Card>
+                <CardContent className="p-0">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Timestamp</TableHead>
+                                <TableHead>Command</TableHead>
+                                <TableHead>Raw Response</TableHead>
+                                <TableHead>Bytes Array</TableHead>
+                                <TableHead>Time (s)</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Box>
-    );
-};
+                        </TableHeader>
+                        <TableBody>
+                            {responses.map((response, index) => (
+                                <TableRow key={index}>
+                                    <TableCell>{new Date(response.timestamp).toLocaleTimeString()}</TableCell>
+                                    <TableCell>{response.command}</TableCell>
+                                    <TableCell>{response.rawResponse}</TableCell>
+                                    <TableCell>
+                                        {response.bytesArray.length > 0 
+                                            ? `[${response.bytesArray.join(', ')}]`
+                                            : 'N/A'
+                                        }
+                                    </TableCell>
+                                    <TableCell>{response.executionTime?.toFixed(3)}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+        </div>
+    )
+}

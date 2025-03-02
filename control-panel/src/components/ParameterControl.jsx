@@ -1,7 +1,9 @@
-import { useState } from 'react';
-import { Box, Slider, Typography, Paper, Button, Collapse } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
-import { api } from '../services/api';
+import { useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Slider } from "@/components/ui/slider"
+import { SendHorizontal } from "lucide-react"
+import { api } from '../services/api'
 
 const parameterRanges = {
     engine_rpm: { min: 0, max: 8000, step: 100 },
@@ -44,74 +46,81 @@ const parameterPIDs = {
 };
 
 export const ParameterControl = ({ parameter, value, onChange }) => {
-    const [bytesResponse, setBytesResponse] = useState(null);
-    const [showResponse, setShowResponse] = useState(false);
-    const range = parameterRanges[parameter] || { min: 0, max: 100, step: 1 };
-    const label = parameterLabels[parameter] || parameter;
+    const [bytesResponse, setBytesResponse] = useState(null)
+    const [showResponse, setShowResponse] = useState(false)
+    const range = parameterRanges[parameter] || { min: 0, max: 100, step: 1 }
+    const label = parameterLabels[parameter] || parameter
 
     const handleSendCommand = async () => {
         try {
-            const pid = parameterPIDs[parameter];
-            if (!pid) return;
+            const pid = parameterPIDs[parameter]
+            if (!pid) return
 
-            const result = await api.sendCommand(pid);
+            const result = await api.sendCommand(pid)
             if (result.status === 'success') {
                 setBytesResponse({
                     raw: result.response,
                     bytes: result.bytesArray || []
-                });
-                setShowResponse(true);
+                })
+                setShowResponse(true)
             }
         } catch (error) {
-            console.error('Error sending command:', error);
+            console.error('Error sending command:', error)
         }
-    };
+    }
 
     return (
-        <Paper elevation={3} sx={{ p: 2, m: 1, width: '300px' }}>
-            <Box sx={{ width: '100%' }}>
-                <Typography gutterBottom>
+        <Card className="w-[350px]">
+            <CardHeader>
+                <CardTitle className="text-xl font-semibold">
                     {label}
-                </Typography>
-                <Typography variant="h6" gutterBottom>
-                    {value.toFixed(2)}
-                </Typography>
-                <Slider
-                    value={value}
-                    onChange={(_, newValue) => onChange(parameter, newValue)}
-                    min={range.min}
-                    max={range.max}
-                    step={range.step}
-                    valueLabelDisplay="auto"
-                />
-                
-                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Button
-                        variant="contained"
-                        size="small"
-                        endIcon={<SendIcon />}
-                        onClick={handleSendCommand}
-                    >
-                        Send
-                    </Button>
-                    {parameterPIDs[parameter] && (
-                        <Typography variant="caption" color="textSecondary">
-                            PID: {parameterPIDs[parameter]}
-                        </Typography>
-                    )}
-                </Box>
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    <div className="text-2xl font-bold">
+                        {value.toFixed(2)}
+                    </div>
+                    
+                    <Slider
+                        value={[value]}
+                        onValueChange={([newValue]) => onChange(parameter, newValue)}
+                        min={range.min}
+                        max={range.max}
+                        step={range.step}
+                        className="my-4"
+                    />
+                    
+                    <div className="flex justify-between items-center">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleSendCommand}
+                            className="flex items-center gap-2"
+                        >
+                            <SendHorizontal className="h-4 w-4" />
+                            Send
+                        </Button>
+                        
+                        {parameterPIDs[parameter] && (
+                            <span className="text-sm text-muted-foreground">
+                                PID: {parameterPIDs[parameter]}
+                            </span>
+                        )}
+                    </div>
 
-                <Collapse in={showResponse && bytesResponse}>
-                    <Box sx={{ mt: 2, p: 1, bgcolor: 'rgba(0, 0, 0, 0.03)', borderRadius: 1 }}>
-                        <Typography variant="caption" display="block" gutterBottom>
-                            Raw: {bytesResponse?.raw}
-                        </Typography>
-                        <Typography variant="caption" display="block">
-                            Bytes: [{bytesResponse?.bytes.join(', ')}]
-                        </Typography>
-                    </Box>
-                </Collapse>
-            </Box>
-        </Paper>
-    );
-};
+                    {showResponse && bytesResponse && (
+                        <div className="mt-4 p-3 bg-muted rounded-md text-sm">
+                            <div className="text-muted-foreground">
+                                Raw: {bytesResponse.raw}
+                            </div>
+                            <div className="text-muted-foreground">
+                                Bytes: [{bytesResponse.bytes.join(', ')}]
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
