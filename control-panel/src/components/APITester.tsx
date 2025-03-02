@@ -25,19 +25,22 @@ export function APITester({ onUpdate }: APITesterProps) {
   };
 
   return (
-    <Card>
+    <Card className="shadow-md">
       <CardHeader>
-        <CardTitle>API Tester</CardTitle>
-        <CardDescription>Send OBD-II commands to the emulator</CardDescription>
+        <CardTitle className="text-lg font-semibold">API Tester</CardTitle>
+        <CardDescription className="text-gray-500">Send OBD-II commands to the emulator</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Input
           value={command}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCommand(e.target.value)}
           placeholder="Enter OBD-II command"
+          className="mt-4"
         />
-        <Button onClick={handleSendCommand}>Send Command</Button>
-        {response && <p>Response: {response}</p>}
+        <Button onClick={handleSendCommand} className="bg-blue-500 text-white hover:bg-blue-600">
+          Send Command
+        </Button>
+        {response && <p className="text-green-500">Response: {response}</p>}
         {error && <p className="text-red-500">{error}</p>}
       </CardContent>
     </Card>

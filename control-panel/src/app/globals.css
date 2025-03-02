@@ -1,3 +1,4 @@
+/* Ensure proper imports and consistent styling in the global CSS file */
 @import "tailwindcss";
 
 @plugin "tailwindcss-animate";

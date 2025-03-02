@@ -77,12 +77,12 @@ function ControlPanel() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto py-8 px-4">
-        <Card className="mb-8">
+        <Card className="mb-8 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-4xl">ECU Simulator</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-4xl font-bold text-center">ECU Simulator</CardTitle>
+            <CardDescription className="text-center text-gray-600">
               Control and monitor ECU parameters through OBD-II commands
             </CardDescription>
           </CardHeader>
@@ -100,7 +100,7 @@ function ControlPanel() {
               <TabsTrigger value="control-panel">Control Panel</TabsTrigger>
               <TabsTrigger value="api-tester">API Tester</TabsTrigger>
             </TabsList>
-            <Button onClick={handleReset}>
+            <Button onClick={handleReset} className="bg-blue-500 text-white hover:bg-blue-600">
               Reset All Values
             </Button>
           </div>

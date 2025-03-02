@@ -17,17 +17,19 @@ export function ParameterControl({ parameter, value, onChange }: ParameterContro
   };
 
   return (
-    <Card>
+    <Card className="shadow-md">
       <CardHeader>
-        <CardTitle>{parameter}</CardTitle>
-        <CardDescription>Current Value: {currentValue}</CardDescription>
+        <CardTitle className="text-lg font-semibold">{parameter}</CardTitle>
+        <CardDescription className="text-gray-500">Current Value: {currentValue}</CardDescription>
       </CardHeader>
       <CardContent>
         <Slider
+          value={[currentValue]}
           onValueChange={handleChange}
           min={0}
           max={100}
           step={1}
+          className="mt-4"
         />
       </CardContent>
     </Card>
