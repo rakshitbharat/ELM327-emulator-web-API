@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Values } from '@/app/control-panel';
 
 interface ParameterControlProps {
   parameter: string;
@@ -25,7 +24,6 @@ export function ParameterControl({ parameter, value, onChange }: ParameterContro
       </CardHeader>
       <CardContent>
         <Slider
-          value={[currentValue]}
           onValueChange={handleChange}
           min={0}
           max={100}

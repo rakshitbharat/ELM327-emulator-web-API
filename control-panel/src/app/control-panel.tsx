@@ -56,7 +56,7 @@ function ControlPanel() {
     }
   };
 
-  const handleValueChange = async (parameter: keyof Values, newValue: number) => {
+  const handleValueChange = async (parameter: string, newValue: number) => {
     try {
       await api.setValue(parameter, newValue);
       setValues(prev => ({ ...prev, [parameter]: newValue }));
