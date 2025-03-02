@@ -1,249 +1,154 @@
-# ELM327 Emulator Web API 🔧🌐
+# ELM327 Emulator Web API 🚗 
 
-[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
-[![Python](https://img.shields.io/badge/Python-3.6+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+<div align="center">
 
-A web-based ELM327 emulator with a modern control panel interface.
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![Python](https://img.shields.io/badge/Python-3.6+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)or-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)ipt](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
-```mermaid
-graph LR
-    A[Client] -->|HTTP Request| B(FastAPI Server)
-    B -->|Process Command| C{ELM327 Emulator}
-    C -->|Response| B
-    B -->|JSON Response| A
-```
+A modern web-based ELM327 emulator with an intuitive GUI control panel. Monitor and control your virtual OBD-II parameters in real-time! 🚀ive GUI control panel. Monitor and control your virtual OBD-II parameters in real-time! 🚀
 
-## Features 🚀
+[Features](#features) • [Quick Start](#quick-start) • [Documentation](#api-documentation) • [Contributing](#contributing) • [Quick Start](#quick-start) • [Documentation](#api-documentation) • [Contributing](#contributing)
 
-- FastAPI backend providing ELM327 emulation
-- Next.js frontend control panel with modern UI
-- Docker Compose setup for easy deployment
+![ELM327 Emulator GUI](docs/image.png)LM327 Emulator GUI](docs/image.png)
 
-## Requirements 📋
+</div>
 
-- Python 3.6 or higher
-- Docker (optional, for containerized deployment)
+## ✨ Features
 
-## Quick Start with Docker Compose 🛠️
+- 🎯 **Interactive GUI Dashboard** - Real-time monitoring of all ECU parameterstime monitoring of all ECU parameters
+- 🚀 **FastAPI Backend** - High-performance ELM327 emulation- 🚀 **FastAPI Backend** - High-performance ELM327 emulation
+- 💻 **Modern React Frontend** - Sleek, responsive control panelt Frontend** - Sleek, responsive control panel
+- 🐳 **Docker Ready** - Easy deployment with Docker Compose- 🐳 **Docker Ready** - Easy deployment with Docker Compose
+- 📊 **Real-time Updates** - Live parameter visualizationes** - Live parameter visualization
+- 🛠️ **Customizable Parameters** - Modify ECU values on the flylues on the fly
 
-1. Clone the repository:
+## 🏁 Quick Start
+
+### Using Docker (Recommended)ended)
+
 ```bash
-git clone <repository-url>
-cd ELM327-emulator-web-API
-```
+# Clone the repository
+git clone <repository-url> clone <repository-url>
+cd ELM327-emulator-web-APIcd ELM327-emulator-web-API
 
-2. Start the application:
-```bash
+# Start the application the application
 docker compose up --build
 ```
 
-This will start both the backend and frontend services:
-- Backend API: http://localhost:8000
-- Control Panel: http://localhost:3000
+Visit:
+- 🌐 GUI Dashboard: http://localhost:3000:3000
+- 📚 API Docs: http://localhost:8000/docsocs
 
-## Development Setup
+### Manual Setup
 
-### Backend (FastAPI)
+**Backend:**
 ```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the server
+pip install -r requirements.txtments.txt
 uvicorn app.main:app --reload
-```
+``````
 
-### Frontend (Next.js Control Panel)
-```bash
-cd control-panel
+**Frontend:**
+```bashbash
+cd control-panelcd control-panel
 bun install
-bun run dev
+bun run dev dev
 ```
 
-## API Documentation
-Once the server is running, you can access:
-- API documentation: http://localhost:8000/docs
-- ReDoc documentation: http://localhost:8000/redoc
+## 🎮 GUI Featureseatures
 
-## API Endpoints 🌐
+- **Real-time Dashboard**: Monitor all ECU parameters at a glance- **Real-time Dashboard**: Monitor all ECU parameters at a glance
+- **Parameter Controls**: Adjust values using intuitive slidersls**: Adjust values using intuitive sliders
+- **Command Console**: Send raw OBD-II commandsands
+- **Response History**: Track command history and responsesnd responses
+- **Protocol Selection**: Switch between different OBD protocols OBD protocols
+- **Dark/Light Theme**: Choose your preferred visual style- **Dark/Light Theme**: Choose your preferred visual style
 
-### 1. Send OBD-II Command
+## 🔧 Available ECU Parameters## 🔧 Available ECU Parameters
 
-`POST /api/v1/command`
+| Parameter | Range | Unit || Parameter | Range | Unit |
+|-----------|-------|------|-----|
+| Engine RPM | 0-8000 | RPM || Engine RPM | 0-8000 | RPM |
+| Vehicle Speed | 0-255 | km/h |
+| Throttle Position | 0-100 | % || Throttle Position | 0-100 | % |
+| Engine Coolant Temp | -40 to 215 | °C |lant Temp | -40 to 215 | °C |
+| Engine Load | 0-100 | % |e Load | 0-100 | % |
+| Fuel Level | 0-100 | % | Fuel Level | 0-100 | % |
+| Manifold Pressure | 0-255 | kPa | | 0-255 | kPa |
+| Timing Advance | -64 to 63.5 | ° |64 to 63.5 | ° |
+| O2 Sensor Voltage | 0-1.275 | V | O2 Sensor Voltage | 0-1.275 | V |
+| Mass Air Flow | 0-655.35 | g/s |ass Air Flow | 0-655.35 | g/s |
 
-Send raw OBD-II commands to the emulator.
+## 🌐 API Endpoints
 
-**Request:**
-```json
-{
-  "command": "ATZ",
-  "protocol": "auto"
-}
+<details>details>
+<summary>View Available Endpoints</summary>e Endpoints</summary>
+
+### Command Execution
+```http``http
+POST /api/v1/commandT /api/v1/command
+``````
+
+### Parameter Control### Parameter Control
+```http
+POST /api/v1/ecu/set-valuePOST /api/v1/ecu/set-value
+GET /api/v1/ecu/values
+GET /api/v1/ecu/value/{parameter}GET /api/v1/ecu/value/{parameter}
+```
+</details>ls>
+
+## 📦 Tech Stack
+
+- **Backend**: FastAPI, Python 3.6+ **Backend**: FastAPI, Python 3.6+
+- **Frontend**: React, TypeScript, Material-UI*Frontend**: React, TypeScript, Material-UI
+- **Containerization**: Docker- **Containerization**: Docker
+- **Documentation**: Swagger/OpenAPISwagger/OpenAPI
+- **Testing**: pytestting**: pytest
+
+## 🛠️ Development
+
+```bash``bash
+# Install development dependenciesnstall development dependencies
+pip install -r requirements-dev.txtpip install -r requirements-dev.txt
+
+# Run tests# Run tests
+pytest
+
+# Run linting
+flake8flake8
 ```
 
-**Success Response:**
-```json
-{
-  "status": "success",
-  "response": "ELM327 v1.5",
-  "execution_time": 0.12
-}
-```
+## 📝 Environment Variables# 📝 Environment Variables
 
-### 2. Set ECU Parameter Value
-
-`POST /api/v1/ecu/set-value`
-
-Set a specific ECU parameter value in the emulator.
-
-**Request:**
-```json
-{
-  "parameter": "engine_rpm",
-  "value": 2500
-}
-```
-
-**Success Response:**
-```json
-{
-  "status": "success",
-  "message": "Value set for engine_rpm"
-}
-```
-
-### 3. Get All ECU Values
-
-`GET /api/v1/ecu/values`
-
-Get all current ECU parameter values.
-
-**Success Response:**
-```json
-{
-  "status": "success",
-  "values": {
-    "engine_rpm": 2500,
-    "vehicle_speed": 60,
-    "throttle_position": 45,
-    "engine_coolant_temp": 90,
-    "engine_load": 65,
-    "fuel_level": 75,
-    "intake_manifold_pressure": 101,
-    "timing_advance": 12,
-    "oxygen_sensor_voltage": 0.8,
-    "mass_air_flow": 8.2
-  }
-}
-```
-
-### 4. Get Specific ECU Value
-
-`GET /api/v1/ecu/value/{parameter}`
-
-Get a specific ECU parameter value.
-
-**Success Response:**
-```json
-{
-  "status": "success",
-  "parameter": "engine_rpm",
-  "value": 2500
-}
-```
-
-## Available ECU Parameters
-
-The following parameters can be controlled and monitored:
-
-- `engine_rpm`: Engine RPM (0-8000)
-- `vehicle_speed`: Vehicle Speed in km/h (0-255)
-- `throttle_position`: Throttle Position % (0-100)
-- `engine_coolant_temp`: Engine Coolant Temperature in °C (-40 to 215)
-- `engine_load`: Calculated Engine Load % (0-100)
-- `fuel_level`: Fuel Tank Level % (0-100)
-- `intake_manifold_pressure`: Intake Manifold Pressure in kPa (0-255)
-- `timing_advance`: Timing Advance in degrees (-64 to 63.5)
-- `oxygen_sensor_voltage`: O2 Sensor Voltage in volts (0-1.275)
-- `mass_air_flow`: Mass Air Flow Rate in grams/sec (0-655.35)
-
-## Dependencies 📦
-
-Core dependencies:
-
-- FastAPI (0.83.0)
-- Uvicorn (0.16.0)
-- ELM327-emulator
-- Python-dotenv (0.20.0)
-- Pydantic (1.x)
-- Mangum (0.12.0)
-- Boto3 (1.9+)
-
-For a complete list of dependencies, see `requirements.txt`.
-
-## Project Structure 📂
-
-```
-├── app/
-│   ├── __init__.py
-│   ├── main.py         # FastAPI application entrypoint
-│   └── elm327_wrapper.py # ELM327 emulator wrapper
-├── control-panel/      # Next.js frontend control panel
-├── Dockerfile          # Backend Docker configuration
-├── control-panel/Dockerfile # Frontend Docker configuration
-├── docker-compose.yml  # Docker Compose configuration
-├── requirements.txt    # Python dependencies
-└── README.md          # Project documentation
-```
-
-## Environment Variables
-
-Backend:
-- `PORT` - Server port (default: 8000)
-- `HOST` - Server host (default: 0.0.0.0)
-
-Frontend:
-- `NEXT_PUBLIC_API_URL` - Backend API URL
-
-## Environment Setup ⚙️
-
-Create `.env` file for local development:
-
+Create `.env`::
 ```env
-# FastAPI Configuration
 API_HOST=0.0.0.0
 API_PORT=8000
 API_RELOAD=True
 ```
 
-## Compatibility Notes 📝
-
-- The application is tested with Python 3.6
-- All dependencies are pinned to versions compatible with Python 3.6
-- The ELM327 emulator is configured in batch mode for better performance
-- Docker deployment uses Python 3.6-slim base image
-
-## Contributing 🤝
-
-Contributions welcome! This is an open source project free to use and modify.
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+2. Create feature branch (`git checkout -b feature/AmazingFeature`) (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`). Push to branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull RequestOpen a Pull Request
 
-## Troubleshooting 🔧
+## 📜 License
 
-Common issues and solutions:
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.MIT License - see the [LICENSE](LICENSE) file for details.
 
-1. **Import Errors**: Make sure you're using Python 3.6 or higher
-2. **Docker Issues**: Ensure Docker is running and port 8000 is available
-3. **Dependency Conflicts**: Use a virtual environment for clean installation
+## 🙏 Acknowledgments
 
-## License 📄
-
-This project is licensed under the same terms as the original ELM327-emulator project.
+- Built on top of the excellent [ELM327-emulator](https://github.com/Ircama/ELM327-emulator) library excellent [ELM327-emulator](https://github.com/Ircama/ELM327-emulator) library
+- Inspired by professional automotive diagnostic toolsred by professional automotive diagnostic tools
 
 ---
 
-Made with ❤️ by [rakshitbharat]
+<div align="center">ter">
+Made with ❤️ by <a href="https://github.com/rakshitbharat">rakshitbharat</a>ade with ❤️ by <a href="https://github.com/rakshitbharat">rakshitbharat</a>
+
+⭐️ Star us on GitHub if you find this useful!⭐️ Star us on GitHub if you find this useful!
+</div>
