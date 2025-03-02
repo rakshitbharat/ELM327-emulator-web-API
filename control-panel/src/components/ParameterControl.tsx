@@ -1,9 +1,16 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { api } from '@/lib/api';
+import { 
+  Collapsible, 
+  CollapsibleContent, 
+  CollapsibleTrigger 
+} from "@/components/ui/collapsible";
 
 interface ParameterRanges {
   [key: string]: {
@@ -11,35 +18,50 @@ interface ParameterRanges {
     max: number;
     step: number;
     unit: string;
+    pid: string; // Added PID for raw command
   };
 }
 
 const parameterRanges: ParameterRanges = {
-  engine_rpm: { min: 0, max: 8000, step: 50, unit: "RPM" },
-  vehicle_speed: { min: 0, max: 200, step: 1, unit: "km/h" },
-  throttle_position: { min: 0, max: 100, step: 1, unit: "%" },
-  engine_coolant_temp: { min: -40, max: 215, step: 1, unit: "°C" },
-  engine_load: { min: 0, max: 100, step: 1, unit: "%" },
-  fuel_level: { min: 0, max: 100, step: 1, unit: "%" },
-  intake_manifold_pressure: { min: 0, max: 255, step: 1, unit: "kPa" },
-  timing_advance: { min: -64, max: 63.5, step: 0.5, unit: "°" },
-  oxygen_sensor_voltage: { min: 0, max: 5, step: 0.1, unit: "V" },
-  mass_air_flow: { min: 0, max: 655.35, step: 0.01, unit: "g/s" },
+  engine_rpm: { min: 0, max: 8000, step: 50, unit: "RPM", pid: "0C" },
+  vehicle_speed: { min: 0, max: 200, step: 1, unit: "km/h", pid: "0D" },
+  throttle_position: { min: 0, max: 100, step: 1, unit: "%", pid: "11" },
+  engine_coolant_temp: { min: -40, max: 215, step: 1, unit: "°C", pid: "05" },
+  engine_load: { min: 0, max: 100, step: 1, unit: "%", pid: "04" },
+  fuel_level: { min: 0, max: 100, step: 1, unit: "%", pid: "2F" },
+  intake_manifold_pressure: { min: 0, max: 255, step: 1, unit: "kPa", pid: "0B" },
+  timing_advance: { min: -64, max: 63.5, step: 0.5, unit: "°", pid: "0E" },
+  oxygen_sensor_voltage: { min: 0, max: 5, step: 0.1, unit: "V", pid: "14" },
+  mass_air_flow: { min: 0, max: 655.35, step: 0.01, unit: "g/s", pid: "10" }
 };
 
 interface ParameterControlProps {
   parameter: string;
   value: number;
   onChange: (parameter: string, value: number) => void;
+  protocol?: string;
 }
 
-export function ParameterControl({ parameter, value, onChange }: ParameterControlProps) {
+export function ParameterControl({ parameter, value, onChange, protocol = 'auto' }: ParameterControlProps) {
   const [localValue, setLocalValue] = useState(value);
+  const [rawResponse, setRawResponse] = useState<any>(null);
   const range = parameterRanges[parameter];
 
   useEffect(() => {
     setLocalValue(value);
   }, [value]);
+
+  const fetchRawData = async () => {
+    try {
+      const response = await api.sendCommand({
+        command: `01 ${range.pid}`,
+        protocol
+      });
+      setRawResponse(response);
+    } catch (error) {
+      setRawResponse({ error: 'Failed to fetch raw data' });
+    }
+  };
 
   const handleSliderChange = (newValue: number[]) => {
     setLocalValue(newValue[0]);
@@ -82,6 +104,34 @@ export function ParameterControl({ parameter, value, onChange }: ParameterContro
             onValueChange={handleSliderChange}
             className="w-full"
           />
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <Button variant="outline" size="sm" className="w-full">
+                Show Raw Data (PID: {range.pid})
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-2">
+              <Card className="bg-muted">
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-mono">Command: 01 {range.pid}</span>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={fetchRawData}
+                    >
+                      Refresh
+                    </Button>
+                  </div>
+                  {rawResponse && (
+                    <pre className="whitespace-pre-wrap font-mono text-sm">
+                      {JSON.stringify(rawResponse, null, 2)}
+                    </pre>
+                  )}
+                </CardContent>
+              </Card>
+            </CollapsibleContent>
+          </Collapsible>
         </div>
       </CardContent>
     </Card>
