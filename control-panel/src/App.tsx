@@ -4,6 +4,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { api } from './services/api'
 import { ParameterControl } from './components/ParameterControl'
 import { APITester } from './components/APITester'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface Values {
   engine_rpm: number;
@@ -31,10 +33,14 @@ function App() {
     oxygen_sensor_voltage: 0,
     mass_air_flow: 0
   })
+
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchValues()
+    // Set up polling interval
+    const interval = setInterval(fetchValues, 5000)
+    return () => clearInterval(interval)
   }, [])
 
   const fetchValues = async () => {
@@ -59,30 +65,47 @@ function App() {
     }
   }
 
+  const handleReset = async () => {
+    try {
+      await api.resetValues()
+      await fetchValues()
+      setError(null)
+    } catch (err) {
+      setError('Failed to reset values. Please try again.')
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="container mx-auto space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold tracking-tight">ECU Simulator</h1>
-          <p className="text-muted-foreground">
-            Control and monitor ECU parameters through OBD-II commands
-          </p>
-        </div>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto py-8 px-4">
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="text-4xl">ECU Simulator</CardTitle>
+            <CardDescription>
+              Control and monitor ECU parameters through OBD-II commands
+            </CardDescription>
+          </CardHeader>
+        </Card>
 
         {error && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="mb-6">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
 
-        <Tabs defaultValue="control-panel" className="w-full">
-          <TabsList className="grid w-full max-w-[400px] mx-auto grid-cols-2">
-            <TabsTrigger value="control-panel">Control Panel</TabsTrigger>
-            <TabsTrigger value="api-tester">API Tester</TabsTrigger>
-          </TabsList>
+        <Tabs defaultValue="control-panel" className="w-full space-y-6">
+          <div className="flex items-center justify-between">
+            <TabsList className="grid w-[400px] grid-cols-2">
+              <TabsTrigger value="control-panel">Control Panel</TabsTrigger>
+              <TabsTrigger value="api-tester">API Tester</TabsTrigger>
+            </TabsList>
+            <Button onClick={handleReset} variant="outline">
+              Reset All Values
+            </Button>
+          </div>
           
-          <TabsContent value="control-panel">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 place-items-center">
+          <TabsContent value="control-panel" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {Object.entries(values).map(([parameter, value]) => (
                 <ParameterControl
                   key={parameter}
@@ -95,7 +118,7 @@ function App() {
           </TabsContent>
           
           <TabsContent value="api-tester">
-            <APITester />
+            <APITester onUpdate={fetchValues} />
           </TabsContent>
         </Tabs>
       </div>
