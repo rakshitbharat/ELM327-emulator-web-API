@@ -77,7 +77,7 @@ export function ParameterControl({ parameter, value, onChange, protocol = 'auto'
   };
 
   return (
-    <Card className="shadow-md">
+    <Card className="shadow-md bg-black/40 border-zinc-800/50 backdrop-blur">
       <CardHeader>
         <CardTitle className="text-lg font-semibold">{parameter}</CardTitle>
         <CardDescription className="text-gray-500">Current Value: {localValue}</CardDescription>
@@ -92,9 +92,9 @@ export function ParameterControl({ parameter, value, onChange, protocol = 'auto'
               min={range.min}
               max={range.max}
               step={range.step}
-              className="w-24"
+              className="w-24 bg-black/20 border-zinc-800"
             />
-            <span className="text-sm text-muted-foreground">{range.unit}</span>
+            <span className="text-sm text-muted-foreground font-mono">{range.unit}</span>
           </div>
           <Slider
             value={[localValue]}
@@ -106,30 +106,35 @@ export function ParameterControl({ parameter, value, onChange, protocol = 'auto'
           />
           <Collapsible>
             <CollapsibleTrigger asChild>
-              <Button variant="outline" size="sm" className="w-full">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full border-zinc-800 bg-black/20 hover:bg-black/40 font-mono text-xs"
+              >
                 Show Raw Data (PID: {range.pid})
               </Button>
             </CollapsibleTrigger>
-            <CollapsibleContent className="mt-2">
-              <Card className="bg-muted">
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-mono">Command: 01 {range.pid}</span>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={fetchRawData}
-                    >
-                      Refresh
-                    </Button>
-                  </div>
-                  {rawResponse && (
-                    <pre className="whitespace-pre-wrap font-mono text-sm">
+            <CollapsibleContent className="mt-2 space-y-2">
+              <div className="rounded-lg border border-zinc-800 bg-black/40 p-4">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs font-mono text-muted-foreground">Command: 01 {range.pid}</span>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={fetchRawData}
+                    className="h-7 text-xs hover:bg-white/5"
+                  >
+                    Refresh
+                  </Button>
+                </div>
+                {rawResponse && (
+                  <div className="mt-2 p-2 rounded bg-black/40 border border-zinc-800/50">
+                    <pre className="text-xs font-mono text-muted-foreground overflow-x-auto">
                       {JSON.stringify(rawResponse, null, 2)}
                     </pre>
-                  )}
-                </CardContent>
-              </Card>
+                  </div>
+                )}
+              </div>
             </CollapsibleContent>
           </Collapsible>
         </div>

@@ -53,10 +53,10 @@
 }
 
 .dark {
-  --background: oklch(0.1 0 0);
-  --foreground: oklch(0.9 0 0);
-  --card: oklch(0.15 0 0);
-  --card-foreground: oklch(0.9 0 0);
+  --background: oklch(0.05 0 0);
+  --foreground: oklch(0.95 0 0);
+  --card: oklch(0.08 0 0);
+  --card-foreground: oklch(0.95 0 0);
   --popover: oklch(0.145 0 0);
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.985 0 0);
@@ -161,9 +161,44 @@
   }
   
   .bg-dashboard {
-    background: linear-gradient(to bottom,
+    background: radial-gradient(
+      circle at center,
       var(--card) 0%,
       var(--background) 100%
     );
   }
+
+  .backdrop-blur {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* Add new animations */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Custom scrollbar for raw data */
+.font-mono::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.font-mono::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.font-mono::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.font-mono::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }

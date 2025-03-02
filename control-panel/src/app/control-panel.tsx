@@ -26,6 +26,20 @@ interface Values {
   mass_air_flow: number;
 }
 
+// Add parameter metadata
+const parameterMeta = {
+  engine_rpm: { max: 8000, unit: 'RPM' },
+  vehicle_speed: { max: 200, unit: 'km/h' },
+  throttle_position: { max: 100, unit: '%' },
+  engine_coolant_temp: { min: -40, max: 215, unit: '°C' },
+  engine_load: { max: 100, unit: '%' },
+  fuel_level: { max: 100, unit: '%' },
+  intake_manifold_pressure: { max: 255, unit: 'kPa' },
+  timing_advance: { min: -64, max: 63.5, unit: '°' },
+  oxygen_sensor_voltage: { max: 5, unit: 'V' },
+  mass_air_flow: { max: 655.35, unit: 'g/s' }
+};
+
 function ControlPanel() {
   const [values, setValues] = useState<Values>({
     engine_rpm: 0,
@@ -120,27 +134,34 @@ function ControlPanel() {
           
           <TabsContent value="parameters">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {Object.entries(values).map(([parameter, value]) => (
-                <Card key={parameter} className="bg-black/40 border-zinc-800 backdrop-blur">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-mono">
-                      {parameter.toUpperCase().replace(/_/g, ' ')}
-                    </CardTitle>
-                    <LED active={value > 0} color={value > 80 ? "red" : "green"} />
-                  </CardHeader>
-                  <CardContent>
-                    <VoltMeter value={value} />
-                    <div className="mt-4">
-                      <ParameterControl
-                        parameter={parameter}
-                        value={value}
-                        onChange={handleValueChange}
-                        protocol={protocol}
+              {Object.entries(values).map(([parameter, value]) => {
+                const meta = parameterMeta[parameter as keyof typeof parameterMeta];
+                return (
+                  <Card key={parameter} className="bg-black/40 border-zinc-800 backdrop-blur">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-mono">
+                        {parameter.toUpperCase().replace(/_/g, ' ')}
+                      </CardTitle>
+                      <LED active={value > 0} color={value > (meta.max * 0.8) ? "red" : "green"} />
+                    </CardHeader>
+                    <CardContent>
+                      <VoltMeter 
+                        value={value} 
+                        max={meta.max} 
+                        min={meta.min || 0} 
                       />
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                      <div className="mt-4">
+                        <ParameterControl
+                          parameter={parameter}
+                          value={value}
+                          onChange={handleValueChange}
+                          protocol={protocol}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </TabsContent>
 
