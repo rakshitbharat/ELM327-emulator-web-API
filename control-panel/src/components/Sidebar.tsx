@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Gauge, Settings, Terminal } from "lucide-react"
+import { Gauge } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const SidebarItems = [
@@ -7,17 +7,7 @@ const SidebarItems = [
     title: "Dashboard",
     icon: Gauge,
     href: "/",
-  },
-  {
-    title: "Settings",
-    icon: Settings,
-    href: "/settings",
-  },
-  {
-    title: "Terminal",
-    icon: Terminal,
-    href: "/terminal",
-  },
+  }
 ]
 
 export function Sidebar() {

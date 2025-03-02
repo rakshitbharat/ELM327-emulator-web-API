@@ -3,7 +3,7 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Sidebar } from "@/components/Sidebar"
-import { ThemeToggle } from "@/components/ThemeToggle"
+import { HeaderControls } from "@/components/HeaderControls"
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -27,9 +27,8 @@ export default function RootLayout({
           <div className="flex min-h-screen">
             <Sidebar />
             <div className="flex-1 pl-64">
-              <header className="sticky top-0 z-50 flex h-16 items-center justify-between border-b bg-background px-6">
-                <div />
-                <ThemeToggle />
+              <header className="sticky top-0 z-50 flex h-16 items-center border-b bg-background px-6">
+                <HeaderControls />
               </header>
               <main className="container py-6">
                 {children}

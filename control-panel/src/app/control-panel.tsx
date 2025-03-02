@@ -114,55 +114,53 @@ function ControlPanel() {
           <div className="flex items-center gap-4">
             <LED active={true} color="red" pulse />
             <h1 className="text-3xl font-bold tracking-tight font-mono">ECU CONTROL UNIT</h1>
-            <LED active={protocol !== 'auto'} color="green" />
           </div>
-          <div className="flex items-center gap-4 bg-black/20 p-4 rounded-lg">
-            <Select value={protocol} onValueChange={handleProtocolChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select Protocol" />
-              </SelectTrigger>
-              <SelectContent>
-                {PROTOCOLS.map((p) => (
-                  <SelectItem key={p.value} value={p.value}>
-                    {p.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button 
-              onClick={handleReset}
-              variant="destructive"
-              className="bg-red-900/50 hover:bg-red-900"
-            >
-              <Zap className="w-4 h-4 mr-2" />
-              Reset System
-            </Button>
-          </div>
+          <Button 
+            onClick={handleReset}
+            variant="destructive"
+            className="bg-red-900/50 hover:bg-red-900"
+          >
+            <Zap className="w-4 h-4 mr-2" />
+            Reset System
+          </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {Object.entries(values).map(([parameter, value]) => (
-            <Card key={parameter} className="bg-black/40 border-zinc-800 backdrop-blur">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-mono">
-                  {parameter.toUpperCase().replace(/_/g, ' ')}
-                </CardTitle>
-                <LED active={value > 0} color={value > 80 ? "red" : "green"} />
-              </CardHeader>
-              <CardContent>
-                <VoltMeter value={value} />
-                <div className="mt-4">
-                  <ParameterControl
-                    parameter={parameter}
-                    value={value}
-                    onChange={handleValueChange}
-                    protocol={protocol}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <Tabs defaultValue="parameters" className="space-y-4">
+          <TabsList className="bg-black/20">
+            <TabsTrigger value="parameters">Parameters</TabsTrigger>
+            <TabsTrigger value="api-tester">AT Commands</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="parameters">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {Object.entries(values).map(([parameter, value]) => (
+                <Card key={parameter} className="bg-black/40 border-zinc-800 backdrop-blur">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-mono">
+                      {parameter.toUpperCase().replace(/_/g, ' ')}
+                    </CardTitle>
+                    <LED active={value > 0} color={value > 80 ? "red" : "green"} />
+                  </CardHeader>
+                  <CardContent>
+                    <VoltMeter value={value} />
+                    <div className="mt-4">
+                      <ParameterControl
+                        parameter={parameter}
+                        value={value}
+                        onChange={handleValueChange}
+                        protocol={protocol}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="api-tester">
+            <APITester />
+          </TabsContent>
+        </Tabs>
       </div>
 
       {error && (
