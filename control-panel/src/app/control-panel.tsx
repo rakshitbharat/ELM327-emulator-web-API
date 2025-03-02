@@ -10,7 +10,7 @@ import { ParameterControl } from '@/components/ParameterControl';
 import { APITester } from '@/components/APITester';
 import { Button } from "@/components/ui/button";
 import { LED, VoltMeter } from "@/components/ui/indicators";
-import { Gauge, Zap, ThermometerHot, Droplet } from "lucide-react";
+import { Gauge, Zap, Thermometer, Droplet } from "lucide-react";
 import { PROTOCOLS } from '@/lib/constants';
 
 interface Values {
