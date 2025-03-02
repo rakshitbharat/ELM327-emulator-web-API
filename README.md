@@ -3,7 +3,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Python](https://img.shields.io/badge/Python-3.6+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 
-A modern web API interface for automotive diagnostics, wrapping the [ELM327-emulator](https://github.com/Ircama/ELM327-emulator) project with RESTful capabilities.
+A web-based ELM327 emulator with a modern control panel interface.
 
 ```mermaid
 graph LR
@@ -15,49 +15,54 @@ graph LR
 
 ## Features 🚀
 
-- 💻 RESTful API endpoints for OBD-II command emulation
-- 📚 Interactive Swagger/OpenAPI documentation
-- ⚡ Real-time command processing with FastAPI
-- 🔒 Type-safe Python implementation
-- 📦 Docker container support
-- 📈 Built-in request validation
+- FastAPI backend providing ELM327 emulation
+- Next.js frontend control panel with modern UI
+- Docker Compose setup for easy deployment
 
 ## Requirements 📋
 
 - Python 3.6 or higher
 - Docker (optional, for containerized deployment)
 
-## Quick Start 🛠️
+## Quick Start with Docker Compose 🛠️
 
-### Local Development
-
+1. Clone the repository:
 ```bash
-# Clone repository
-git clone https://github.com/rakshitbharat/ELM327-emulator-web-API.git
+git clone <repository-url>
 cd ELM327-emulator-web-API
+```
 
-# Create and activate virtual environment (recommended)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+2. Start the application:
+```bash
+docker compose up --build
+```
 
+This will start both the backend and frontend services:
+- Backend API: http://localhost:8000
+- Control Panel: http://localhost:3000
+
+## Development Setup
+
+### Backend (FastAPI)
+```bash
 # Install dependencies
 pip install -r requirements.txt
 
-# Start development server
+# Run the server
 uvicorn app.main:app --reload
 ```
 
-### Docker Deployment
-
+### Frontend (Next.js Control Panel)
 ```bash
-# Build image
-docker build -t elm-api .
-
-# Run container
-docker run -p 8000:8000 elm-api
+cd control-panel
+bun install
+bun run dev
 ```
 
-Visit the interactive API docs: http://localhost:8000/docs
+## API Documentation
+Once the server is running, you can access:
+- API documentation: http://localhost:8000/docs
+- ReDoc documentation: http://localhost:8000/redoc
 
 ## API Endpoints 🌐
 
@@ -182,10 +187,22 @@ For a complete list of dependencies, see `requirements.txt`.
 │   ├── __init__.py
 │   ├── main.py         # FastAPI application entrypoint
 │   └── elm327_wrapper.py # ELM327 emulator wrapper
-├── Dockerfile          # Docker configuration
+├── control-panel/      # Next.js frontend control panel
+├── Dockerfile          # Backend Docker configuration
+├── control-panel/Dockerfile # Frontend Docker configuration
+├── docker-compose.yml  # Docker Compose configuration
 ├── requirements.txt    # Python dependencies
 └── README.md          # Project documentation
 ```
+
+## Environment Variables
+
+Backend:
+- `PORT` - Server port (default: 8000)
+- `HOST` - Server host (default: 0.0.0.0)
+
+Frontend:
+- `NEXT_PUBLIC_API_URL` - Backend API URL
 
 ## Environment Setup ⚙️
 
