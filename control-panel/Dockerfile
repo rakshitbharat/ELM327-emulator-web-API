@@ -34,9 +34,6 @@ RUN bun add -d postcss postcss-nested postcss-import autoprefixer
 # Copy the rest of the application code
 COPY . .
 
-# Run the next/font codemod
-RUN npx @next/codemod built-in-next-font .
-
 # Expose the port the app runs on
 EXPOSE 3000
 
