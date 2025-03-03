@@ -22,8 +22,13 @@ services:
       - "3000:3000"
     volumes:
       - ./control-panel:/app
+      - /app/node_modules
       - /app/.next
     environment:
       - NEXT_PUBLIC_API_URL=http://backend:8000
+      - NODE_ENV=development
     depends_on:
       - backend
+    init: true
+    tty: true
+    stdin_open: true
