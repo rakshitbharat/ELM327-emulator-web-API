@@ -65,6 +65,7 @@
     "@types/node": "^20.17.22",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
+    "postcss-nested": "^6.0.1",
     "tailwindcss": "^4.0.9",
     "typescript": "^5.8.2"
   }
