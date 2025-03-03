@@ -1,11 +1,8 @@
-# Use Node 20 as the base image
-FROM node:20
+# Use Bun's official image instead of Node
+FROM oven/bun:1.0.35
 
 # Set the working directory
 WORKDIR /app
-
-# Install bun globally
-RUN npm install -g bun
 
 # Copy package files first
 COPY package.json bun.lock ./
