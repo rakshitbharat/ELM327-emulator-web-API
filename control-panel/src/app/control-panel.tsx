@@ -40,6 +40,11 @@ const parameterMeta = {
   mass_air_flow: { max: 655.35, unit: 'g/s' }
 };
 
+// Add a type guard to check if 'min' property exists
+const hasMinProperty = (meta: any): meta is { min: number; max: number; unit: string } => {
+  return (meta as { min: number }).min !== undefined;
+};
+
 function ControlPanel() {
   const [values, setValues] = useState<Values>({
     engine_rpm: 0,
@@ -148,7 +153,7 @@ function ControlPanel() {
                       <VoltMeter 
                         value={value} 
                         max={meta.max} 
-                        min={meta.min || 0} 
+                        min={hasMinProperty(meta) ? meta.min : 0} 
                       />
                       <div className="mt-4">
                         <ParameterControl
