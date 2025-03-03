@@ -1,10 +1,14 @@
+import postcssImport from 'postcss-import'
+import tailwindcss from 'tailwindcss'
+import postcssNested from 'postcss-nested'
+import autoprefixer from 'autoprefixer'
+
 const config = {
   plugins: [
-    "postcss-import",
-    "tailwindcss",
-    "postcss-nested",
-    "autoprefixer",
+    postcssImport,
+    tailwindcss,
+    postcssNested,
+    autoprefixer,
   ],
 };
-
 export default config;
