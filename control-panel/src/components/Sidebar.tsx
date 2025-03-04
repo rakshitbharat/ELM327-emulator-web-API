@@ -14,9 +14,11 @@ import {
   History,
   BookMarked,
   CarFront,
-  PanelLeftIcon
+  PanelLeftIcon,
+  Globe,
+  LayoutDashboard,
+  File
 } from "lucide-react";
-
 import {
   Sidebar as SidebarRoot,
   SidebarContent,
@@ -34,9 +36,27 @@ import { usePathname } from "next/navigation";
 
 const SidebarItems = [
   {
+    title: "API Tester",
+    icon: Globe,
+    href: "/",
+    description: "Test API endpoints directly"
+  },
+  {
+    title: "Control Panel",
+    icon: LayoutDashboard,
+    href: "/control-panel",
+    description: "Manage emulator settings"
+  },
+  {
+    title: "Documentation",
+    icon: File,
+    href: "/docs",
+    description: "View API documentation"
+  },
+  {
     title: "Dashboard",
     icon: Gauge,
-    href: "/",
+    href: "/dashboard",
     description: "Monitor ECU parameters in real-time"
   },
   {
@@ -48,7 +68,7 @@ const SidebarItems = [
   {
     title: "Documentation",
     icon: BookOpen,
-    href: "/docs",
+    href: "/documentation",
     description: "Read the project documentation"
   },
   {
@@ -97,7 +117,7 @@ const SidebarItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { state, toggleSidebar } = useSidebar();
+  const { state, toggle: toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed";
   
   return (

@@ -7,6 +7,10 @@ import { LED } from "@/components/ui/indicators"
 import { PROTOCOLS } from "@/lib/constants"
 import { api } from '@/lib/api'
 import { cn } from "@/lib/utils"
+import { ThemeToggle } from "./ThemeToggle"
+import { Button } from "@/components/ui/button"
+import { Globe, LayoutDashboard } from "lucide-react"
+import Link from "next/link"
 
 export function HeaderControls() {
   const [protocol, setProtocol] = useState('auto')
@@ -63,12 +67,12 @@ export function HeaderControls() {
   }, [protocol])
 
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full sm:w-auto">
+    <div className="flex flex-col md:flex-row items-center justify-between w-full gap-4 p-4 border-b border-zinc-800/40 bg-zinc-900/95">
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full sm:w-auto">
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <LED active={protocol !== 'auto'} color={protocol !== 'auto' ? 'green' : 'red'} />
           <Select value={protocol} onValueChange={handleProtocolChange}>
-            <SelectTrigger className="w-full sm:w-[280px] bg-black/20 border-zinc-800 text-zinc-100">
+            <SelectTrigger className="w-full sm:w-[280px] bg-zinc-800/50 border-zinc-700 text-zinc-100">
               <SelectValue placeholder="Select Protocol" />
             </SelectTrigger>
             <SelectContent>
@@ -86,25 +90,40 @@ export function HeaderControls() {
           <Input
             value={ecuAddress}
             onChange={(e) => handleECUAddressChange(e.target.value)}
-            className="w-full sm:w-24 font-mono bg-black/20 border-zinc-800 text-zinc-100"
+            className="w-full sm:w-24 font-mono bg-zinc-800/50 border-zinc-700 text-zinc-100"
             placeholder="7E0"
           />
         </div>
+
+        <button 
+          onClick={handleReset} 
+          disabled={isResetting}
+          className={cn(
+            "px-4 py-2 rounded-md text-sm font-medium transition-all",
+            "bg-red-900/20 hover:bg-red-900/40 border border-red-900/50",
+            "text-red-400 hover:text-red-300",
+            "disabled:opacity-50 disabled:cursor-not-allowed",
+            "w-full sm:w-auto"
+          )}
+        >
+          {isResetting ? 'Resetting...' : 'Reset System'}
+        </button>
       </div>
 
-      <button 
-        onClick={handleReset} 
-        disabled={isResetting}
-        className={cn(
-          "px-4 py-2 rounded-md text-sm font-medium transition-all",
-          "bg-red-900/20 hover:bg-red-900/40 border border-red-900/50",
-          "text-red-400 hover:text-red-300",
-          "disabled:opacity-50 disabled:cursor-not-allowed",
-          "w-full sm:w-auto"
-        )}
-      >
-        {isResetting ? 'Resetting...' : 'Reset System'}
-      </button>
+      <div className="flex items-center gap-2">
+        <Button variant="ghost" size="sm" asChild className="text-zinc-400 hover:text-zinc-100">
+          <Link href="/">
+            <Globe className="h-4 w-4 mr-2" />
+            API Tester
+          </Link>
+        </Button>
+        <Button variant="ghost" size="sm" asChild className="text-zinc-400 hover:text-zinc-100">
+          <Link href="/control-panel">
+            <LayoutDashboard className="h-4 w-4 mr-2" />
+            Control Panel
+          </Link>
+        </Button>
+      </div>
     </div>
   )
 }
