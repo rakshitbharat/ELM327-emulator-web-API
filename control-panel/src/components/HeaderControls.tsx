@@ -92,7 +92,7 @@ export function HeaderControls() {
       </div>
 
       <button onClick={handleReset} disabled={isResetting} className="bg-red-500 text-white px-4 py-2 rounded">
-        {isResetting ? 'Resetting...' : 'Reset System'}
+       {isResetting ? 'Resetting...' : 'Reset System'}
       </button>
     </div>
   )

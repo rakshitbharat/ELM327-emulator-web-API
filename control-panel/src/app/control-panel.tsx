@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -114,66 +114,79 @@ function ControlPanel() {
   };
 
   return (
-    <div className="space-y-6 bg-dashboard min-h-screen p-6">
-      <div className="grid gap-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <LED active={true} color="red" pulse />
-            <h1 className="text-3xl font-bold tracking-tight font-mono">ECU CONTROL UNIT</h1>
-          </div>
-          <Button 
-            onClick={handleReset}
-            variant="destructive"
-            className="bg-red-900/50 hover:bg-red-900"
-          >
-            <Zap className="w-4 h-4 mr-2" />
-            Reset System
-          </Button>
-        </div>
+    <div className="container mx-auto space-y-6 p-4 md:p-6 max-w-7xl">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="col-span-full lg:col-span-2 transition-all hover:shadow-md hover:border-primary/50">
+          <CardHeader>
+            <CardTitle>Live ECU Parameters</CardTitle>
+            <CardDescription>Real-time monitoring of engine control unit parameters</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="parameters" className="space-y-4">
+              <TabsList className="bg-black/20">
+                <TabsTrigger value="parameters">Parameters</TabsTrigger>
+                <TabsTrigger value="api-tester">AT Commands</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="parameters">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {Object.entries(values).map(([parameter, value]) => {
+                    const meta = parameterMeta[parameter as keyof typeof parameterMeta];
+                    return (
+                      <Card key={parameter} className="bg-black/40 border-zinc-800 backdrop-blur">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                          <CardTitle className="text-sm font-mono">
+                            {parameter.toUpperCase().replace(/_/g, ' ')}
+                          </CardTitle>
+                          <LED active={value > 0} color={value > (meta.max * 0.8) ? "red" : "green"} />
+                        </CardHeader>
+                        <CardContent>
+                          <VoltMeter 
+                            value={value} 
+                            max={meta.max} 
+                            min={hasMinProperty(meta) ? meta.min : 0} 
+                          />
+                          <div className="mt-4">
+                            <ParameterControl
+                              parameter={parameter}
+                              value={value}
+                              onChange={handleValueChange}
+                              protocol={protocol}
+                            />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </TabsContent>
 
-        <Tabs defaultValue="parameters" className="space-y-4">
-          <TabsList className="bg-black/20">
-            <TabsTrigger value="parameters">Parameters</TabsTrigger>
-            <TabsTrigger value="api-tester">AT Commands</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="parameters">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {Object.entries(values).map(([parameter, value]) => {
-                const meta = parameterMeta[parameter as keyof typeof parameterMeta];
-                return (
-                  <Card key={parameter} className="bg-black/40 border-zinc-800 backdrop-blur">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-mono">
-                        {parameter.toUpperCase().replace(/_/g, ' ')}
-                      </CardTitle>
-                      <LED active={value > 0} color={value > (meta.max * 0.8) ? "red" : "green"} />
-                    </CardHeader>
-                    <CardContent>
-                      <VoltMeter 
-                        value={value} 
-                        max={meta.max} 
-                        min={hasMinProperty(meta) ? meta.min : 0} 
-                      />
-                      <div className="mt-4">
-                        <ParameterControl
-                          parameter={parameter}
-                          value={value}
-                          onChange={handleValueChange}
-                          protocol={protocol}
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </TabsContent>
+              <TabsContent value="api-tester">
+                <APITester />
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
 
-          <TabsContent value="api-tester">
-            <APITester />
-          </TabsContent>
-        </Tabs>
+        <Card className="transition-all hover:shadow-md hover:border-primary/50">
+          <CardHeader>
+            <CardTitle>Quick Stats</CardTitle>
+            <CardDescription>Overview of key metrics</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {/* Add your quick stats here */}
+          </CardContent>
+        </Card>
+
+        <Card className="col-span-full transition-all hover:shadow-md hover:border-primary/50">
+          <CardHeader>
+            <CardTitle>Command History</CardTitle>
+            <CardDescription>Recent OBD-II commands and responses</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {/* Add your command history here */}
+          </CardContent>
+        </Card>
       </div>
 
       {error && (
