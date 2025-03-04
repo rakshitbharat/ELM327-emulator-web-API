@@ -1,14 +1,41 @@
-FROM oven/bun:1
+# Use Node.js base image
+FROM node:20-slim
 
+# Set working directory
 WORKDIR /app
 
-COPY package.json bun.lock ./
+# Install curl for nvm installation
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# Install nvm
+ENV NVM_DIR /usr/local/nvm
+RUN mkdir -p $NVM_DIR
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+# Add NVM to path and set Node 20
+ENV NODE_VERSION 20
+ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+
+# Install Bun
+RUN npm install -g bun
+
+# Copy package files first
+COPY package.json ./
+COPY bun.lock ./
+COPY stream-polyfill.js ./
+COPY postcss.config.mjs ./
+
+# Install dependencies using Bun
 RUN bun install
 
+# Install PostCSS dependencies explicitly
+RUN bun add -d postcss postcss-nested postcss-import autoprefixer
+
+# Copy the rest of the application code
 COPY . .
 
-ENV NODE_ENV=production
-RUN bun run build
-
+# Expose the port the app runs on
 EXPOSE 3000
+
+# Start the application in development mode
 CMD ["bun", "run", "dev"]

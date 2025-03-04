@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -38,6 +38,11 @@ const parameterMeta = {
   timing_advance: { min: -64, max: 63.5, unit: '°' },
   oxygen_sensor_voltage: { max: 5, unit: 'V' },
   mass_air_flow: { max: 655.35, unit: 'g/s' }
+};
+
+// Add a type guard to check if 'min' property exists
+const hasMinProperty = (meta: any): meta is { min: number; max: number; unit: string } => {
+  return (meta as { min: number }).min !== undefined;
 };
 
 function ControlPanel() {
@@ -109,66 +114,80 @@ function ControlPanel() {
   };
 
   return (
-    <div className="space-y-6 bg-dashboard min-h-screen p-6">
-      <div className="grid gap-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <LED active={true} color="red" pulse />
-            <h1 className="text-3xl font-bold tracking-tight font-mono">ECU CONTROL UNIT</h1>
-          </div>
-          <Button 
-            onClick={handleReset}
-            variant="destructive"
-            className="bg-red-900/50 hover:bg-red-900"
-          >
-            <Zap className="w-4 h-4 mr-2" />
-            Reset System
-          </Button>
-        </div>
+    <div className="container max-w-7xl mx-auto p-4 lg:p-6 space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
+        {Object.entries(values).map(([parameter, value]) => {
+          const meta = parameterMeta[parameter as keyof typeof parameterMeta];
+          return (
+            <Card key={parameter} className="w-full h-full min-h-[200px] bg-black/40 border-zinc-800 backdrop-blur">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-mono">
+                  {parameter.toUpperCase().replace(/_/g, ' ')}
+                </CardTitle>
+                <LED active={value > 0} color={value > (meta.max * 0.8) ? "red" : "green"} />
+              </CardHeader>
+              <CardContent>
+                <VoltMeter 
+                  value={value} 
+                  max={meta.max} 
+                  min={hasMinProperty(meta) ? meta.min : 0} 
+                />
+                <div className="mt-4">
+                  <ParameterControl
+                    parameter={parameter}
+                    value={value}
+                    onChange={handleValueChange}
+                    protocol={protocol}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
 
-        <Tabs defaultValue="parameters" className="space-y-4">
-          <TabsList className="bg-black/20">
-            <TabsTrigger value="parameters">Parameters</TabsTrigger>
-            <TabsTrigger value="api-tester">AT Commands</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="parameters">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {Object.entries(values).map(([parameter, value]) => {
-                const meta = parameterMeta[parameter as keyof typeof parameterMeta];
-                return (
-                  <Card key={parameter} className="bg-black/40 border-zinc-800 backdrop-blur">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-mono">
-                        {parameter.toUpperCase().replace(/_/g, ' ')}
-                      </CardTitle>
-                      <LED active={value > 0} color={value > (meta.max * 0.8) ? "red" : "green"} />
-                    </CardHeader>
-                    <CardContent>
-                      <VoltMeter 
-                        value={value} 
-                        max={meta.max} 
-                        min={meta.min || 0} 
-                      />
-                      <div className="mt-4">
-                        <ParameterControl
-                          parameter={parameter}
-                          value={value}
-                          onChange={handleValueChange}
-                          protocol={protocol}
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="api-tester">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+        <Card className="lg:col-span-2 bg-black/40 border-zinc-800">
+          <CardHeader>
+            <CardTitle>API Tester</CardTitle>
+            <CardDescription>Send custom OBD-II commands</CardDescription>
+          </CardHeader>
+          <CardContent>
             <APITester />
-          </TabsContent>
-        </Tabs>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-black/40 border-zinc-800">
+          <CardHeader>
+            <CardTitle>Protocol Settings</CardTitle>
+            <CardDescription>Configure communication protocol</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Select
+              value={protocol}
+              onValueChange={handleProtocolChange}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select Protocol" />
+              </SelectTrigger>
+              <SelectContent>
+                {PROTOCOLS.map((p) => (
+                  <SelectItem key={p.value} value={p.value}>
+                    {p.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Button 
+              variant="outline" 
+              onClick={handleReset}
+              className="w-full"
+            >
+              Reset All Values
+            </Button>
+          </CardContent>
+        </Card>
       </div>
 
       {error && (

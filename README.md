@@ -3,9 +3,10 @@
 <div align="center">
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
-[![Python](https://img.shields.io/badge/Python-3.6+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Bun](https://img.shields.io/badge/Bun-000000?style=for-the-badge&logo=bun&logoColor=white)](https://bun.sh/)
 
 A modern web-based ELM327 emulator with an intuitive GUI control panel. Monitor and control your virtual OBD-II parameters in real-time! 🚀
 
@@ -19,10 +20,11 @@ A modern web-based ELM327 emulator with an intuitive GUI control panel. Monitor 
 
 - 🎯 **Interactive GUI Dashboard** - Real-time monitoring of all ECU parameters
 - 🚀 **FastAPI Backend** - High-performance ELM327 emulation
-- 💻 **Modern React Frontend** - Sleek, responsive control panel
+- 💻 **Modern Next.js Frontend** - Sleek, responsive control panel with shadcn/ui components
 - 🐳 **Docker Ready** - Easy deployment with Docker Compose
 - 📊 **Real-time Updates** - Live parameter visualization
 - 🛠️ **Customizable Parameters** - Modify ECU values on the fly
+- 🌓 **Dark/Light Mode** - Built-in theme support
 
 ## 🏁 Quick Start
 
@@ -30,7 +32,7 @@ A modern web-based ELM327 emulator with an intuitive GUI control panel. Monitor 
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/rakshitbharat/ELM327-emulator-web-API.git
 cd ELM327-emulator-web-API
 
 # Start the application
@@ -59,11 +61,11 @@ bun run dev
 ## 🎮 GUI Features
 
 - **Real-time Dashboard**: Monitor all ECU parameters at a glance
-- **Parameter Controls**: Adjust values using intuitive sliders
+- **Parameter Controls**: Adjust values using intuitive sliders and inputs
 - **Command Console**: Send raw OBD-II commands
 - **Response History**: Track command history and responses
 - **Protocol Selection**: Switch between different OBD protocols
-- **Dark/Light Theme**: Choose your preferred visual style
+- **Dark/Light Theme**: Choose your preferred visual style with system theme support
 
 ## 🔧 Available ECU Parameters
 
@@ -100,8 +102,9 @@ GET /api/v1/ecu/value/{parameter}
 
 ## 📦 Tech Stack
 
-- **Backend**: FastAPI, Python 3.6+
-- **Frontend**: React, TypeScript, Material-UI
+- **Backend**: FastAPI, Python 3.10+
+- **Frontend**: Next.js 14, TypeScript, shadcn/ui
+- **Package Manager**: Bun
 - **Containerization**: Docker
 - **Documentation**: Swagger/OpenAPI
 - **Testing**: pytest
@@ -126,6 +129,7 @@ Create `.env`:
 API_HOST=0.0.0.0
 API_PORT=8000
 API_RELOAD=True
+NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
 ## 🤝 Contributing
@@ -144,6 +148,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Built on top of the excellent [ELM327-emulator](https://github.com/Ircama/ELM327-emulator) library
 - Inspired by professional automotive diagnostic tools
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
 
 ---
 

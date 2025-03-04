@@ -1,0 +1,1 @@
+this have many bugs i think the ECU CONTROL UNIT have indicator which always stays red also the reset system is not working here in HeaderControls component have dropdown to select the protocol that is also have 2 times auto optiopn also the ECU address is wrong it should have all possible address based on the selected protocol because all protocol have its own way of ecu address

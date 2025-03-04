@@ -1,8 +1,15 @@
 "use client"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-export function LED({ active, color = "green", size = "md", pulse = false }) {
+interface LEDProps {
+  active: boolean;
+  color?: "green" | "red" | "yellow";
+  size?: "sm" | "md" | "lg";
+  pulse?: boolean;
+}
+
+export function LED({ active, color = "green", size = "md", pulse = false }: LEDProps) {
   return (
     <div
       className={cn(
@@ -17,7 +24,7 @@ export function LED({ active, color = "green", size = "md", pulse = false }) {
         pulse && active && "animate-pulse"
       )}
     />
-  )
+  );
 }
 
 interface VoltMeterProps {
@@ -32,11 +39,10 @@ export function VoltMeter({ value, max = 100, min = 0, showTicks = true }: VoltM
   const normalizedValue = Math.min(100, Math.max(0, ((value - min) / (max - min)) * 100));
   
   const getColor = (percent: number) => {
-    if (percent > 80) return "from-red-500 to-red-300"
-    if (percent > 60) return "from-yellow-500 to-yellow-300"
-    return "from-blue-500 to-blue-300"
-  }
-
+    if (percent > 80) return "from-red-500 to-red-300";
+    if (percent > 60) return "from-yellow-500 to-yellow-300";
+    return "from-blue-500 to-blue-300";
+  };
   return (
     <div className="relative h-3 w-full rounded-full bg-black/40 border border-zinc-800/50 backdrop-blur overflow-hidden">
       <div
@@ -53,5 +59,5 @@ export function VoltMeter({ value, max = 100, min = 0, showTicks = true }: VoltM
         </div>
       )}
     </div>
-  )
+  );
 }
