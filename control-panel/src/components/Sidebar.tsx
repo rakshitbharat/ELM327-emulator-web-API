@@ -1,14 +1,30 @@
-import Link from "next/link"
-import { Gauge } from "lucide-react"
-import { cn } from "@/lib/utils"
+import Link from "next/link";
+import { Gauge, BookOpen, FileText, Info } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const SidebarItems = [
   {
     title: "Dashboard",
     icon: Gauge,
     href: "/",
-  }
-]
+  },
+  {
+    title: "GitHub Repo",
+    icon: Info,
+    href: "https://github.com/your-repo",
+  },
+  {
+    title: "Repo Documentation",
+    icon: BookOpen,
+    href: "/docs",
+  },
+  {
+    title: "API Docs",
+    icon: FileText,
+    href: "/api-docs",
+  },
+  // Add more items as needed
+];
 
 export function Sidebar() {
   return (
@@ -31,5 +47,5 @@ export function Sidebar() {
         ))}
       </nav>
     </div>
-  )
+  );
 }

@@ -32,7 +32,7 @@ A modern web-based ELM327 emulator with an intuitive GUI control panel. Monitor 
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/rakshitbharat/ELM327-emulator-web-API.git
 cd ELM327-emulator-web-API
 
 # Start the application
