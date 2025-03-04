@@ -49,9 +49,9 @@ const SidebarItems = [
   },
   {
     title: "Documentation",
-    icon: File,
+    icon: BookOpen,
     href: "/docs",
-    description: "View API documentation"
+    description: "Read the project documentation"
   },
   {
     title: "Dashboard",
@@ -64,12 +64,6 @@ const SidebarItems = [
     icon: Github,
     href: "https://github.com/rakshitbharat/ELM327-emulator-web-API",
     description: "View source code and contribute"
-  },
-  {
-    title: "Documentation",
-    icon: BookOpen,
-    href: "/documentation",
-    description: "Read the project documentation"
   },
   {
     title: "API Reference",
@@ -117,8 +111,8 @@ const SidebarItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { state, toggle: toggleSidebar } = useSidebar();
-  const isCollapsed = state === "collapsed";
+  const { isOpen, toggle: toggleSidebar } = useSidebar();
+  const isCollapsed = !isOpen;
   
   return (
     <SidebarRoot>
