@@ -105,8 +105,8 @@ export function Sidebar() {
           <div className="flex items-center gap-2">
             <CarFront className="h-6 w-6 text-primary animate-pulse-glow" />
             <div className="flex flex-col">
-              <span className="text-lg font-semibold tracking-tight text-zinc-100">ELM327</span>
-              <span className="text-sm font-medium text-zinc-400">Emulator Web API</span>
+              <span className="text-lg font-semibold tracking-tight text-white">ELM327</span>
+              <span className="text-sm font-medium text-zinc-300">Emulator Web API</span>
             </div>
           </div>
         </SidebarHeader>
@@ -123,10 +123,10 @@ export function Sidebar() {
                       isActive={isActive}
                       className={cn(
                         "w-full transition-all duration-200",
-                        "hover:bg-zinc-800/80 hover:text-zinc-100",
+                        "hover:bg-zinc-800/90 hover:text-zinc-50",
                         "group flex flex-col gap-1 rounded-lg px-3 py-2.5",
                         "border border-transparent",
-                        isActive && "bg-zinc-800 border-zinc-700/50 shadow-sm"
+                        isActive && "bg-zinc-800/90 border-zinc-700/50 shadow-sm"
                       )}
                     >
                       <a className="flex items-start gap-3">
@@ -136,13 +136,13 @@ export function Sidebar() {
                           "group-hover:text-primary transition-colors"
                         )} />
                         <div className="flex flex-col gap-1 min-w-0">
-                          <span className="font-medium leading-none text-zinc-100">
+                          <span className="font-medium leading-none text-zinc-50">
                             {item.title}
                           </span>
                           <span className={cn(
                             "text-sm leading-none",
-                            isActive ? "text-zinc-300" : "text-zinc-500",
-                            "group-hover:text-zinc-300 transition-colors"
+                            isActive ? "text-zinc-300" : "text-zinc-400",
+                            "group-hover:text-zinc-200 transition-colors"
                           )}>
                             {item.description}
                           </span>
@@ -159,8 +159,8 @@ export function Sidebar() {
         <SidebarFooter className="border-t border-zinc-800/40 bg-zinc-900/50">
           <div className="p-4 flex flex-col gap-3">
             <div>
-              <h4 className="text-sm font-medium text-zinc-100">ELM327 Emulator</h4>
-              <p className="text-sm text-zinc-400">Developed with ❤️</p>
+              <h4 className="text-sm font-medium text-zinc-50">ELM327 Emulator</h4>
+              <p className="text-sm text-zinc-300">Developed with ❤️</p>
             </div>
             <Button
               variant="secondary"

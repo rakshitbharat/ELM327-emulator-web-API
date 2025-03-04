@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { LED } from "@/components/ui/indicators"
 import { PROTOCOLS } from "@/lib/constants"
 import { api } from '@/lib/api'
+import { cn } from "@/lib/utils"
 
 export function HeaderControls() {
   const [protocol, setProtocol] = useState('auto')
@@ -49,12 +50,10 @@ export function HeaderControls() {
   };
 
   const updateEcuAddress = (protocol: string) => {
-    // Update ECU address based on the selected protocol
     const addressMap: { [key: string]: string } = {
       'auto': '7E0',
       '1': '7E1',
       '2': '7E2',
-      // Add other protocol-specific addresses here
     }
     setEcuAddress(addressMap[protocol] || '7E0')
   }
@@ -64,35 +63,47 @@ export function HeaderControls() {
   }, [protocol])
 
   return (
-    <div className="flex items-center gap-6">
-      <div className="flex items-center gap-2">
-        <LED active={protocol !== 'auto'} color={protocol !== 'auto' ? 'green' : 'red'} />
-        <Select value={protocol} onValueChange={handleProtocolChange}>
-          <SelectTrigger className="w-[280px]">
-            <SelectValue placeholder="Select Protocol" />
-          </SelectTrigger>
-          <SelectContent>
-            {PROTOCOLS.map((p) => (
-              <SelectItem key={p.value} value={p.value}>
-                {p.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full sm:w-auto">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full sm:w-auto">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <LED active={protocol !== 'auto'} color={protocol !== 'auto' ? 'green' : 'red'} />
+          <Select value={protocol} onValueChange={handleProtocolChange}>
+            <SelectTrigger className="w-full sm:w-[280px] bg-black/20 border-zinc-800 text-zinc-100">
+              <SelectValue placeholder="Select Protocol" />
+            </SelectTrigger>
+            <SelectContent>
+              {PROTOCOLS.map((p) => (
+                <SelectItem key={p.value} value={p.value}>
+                  {p.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <span className="text-sm font-medium text-zinc-300">ECU:</span>
+          <Input
+            value={ecuAddress}
+            onChange={(e) => handleECUAddressChange(e.target.value)}
+            className="w-full sm:w-24 font-mono bg-black/20 border-zinc-800 text-zinc-100"
+            placeholder="7E0"
+          />
+        </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-medium">ECU Address:</span>
-        <Input
-          value={ecuAddress}
-          onChange={(e) => handleECUAddressChange(e.target.value)}
-          className="w-24 font-mono"
-          placeholder="7E0"
-        />
-      </div>
-
-      <button onClick={handleReset} disabled={isResetting} className="bg-red-500 text-white px-4 py-2 rounded">
-       {isResetting ? 'Resetting...' : 'Reset System'}
+      <button 
+        onClick={handleReset} 
+        disabled={isResetting}
+        className={cn(
+          "px-4 py-2 rounded-md text-sm font-medium transition-all",
+          "bg-red-900/20 hover:bg-red-900/40 border border-red-900/50",
+          "text-red-400 hover:text-red-300",
+          "disabled:opacity-50 disabled:cursor-not-allowed",
+          "w-full sm:w-auto"
+        )}
+      >
+        {isResetting ? 'Resetting...' : 'Reset System'}
       </button>
     </div>
   )
