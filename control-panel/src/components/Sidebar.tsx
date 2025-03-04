@@ -12,7 +12,17 @@ import {
   History,
   BookMarked
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+
+import {
+  Sidebar as SidebarRoot,
+  SidebarContent,
+  SidebarHeader,
+  SidebarFooter,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+} from "@/components/ui/sidebar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const SidebarItems = [
   {
@@ -79,41 +89,43 @@ const SidebarItems = [
 
 export function Sidebar() {
   return (
-    <div className="fixed left-0 top-0 z-40 h-screen w-64 border-r bg-background">
-      <div className="flex h-16 items-center border-b px-6">
-        <Link href="/" className="flex items-center space-x-2">
-          <span className="text-lg font-semibold">ELM327 Emulator</span>
-        </Link>
-      </div>
-      
-      <nav className="space-y-1 p-4">
-        <div className="space-y-4">
-          {SidebarItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "group flex flex-col space-y-0.5 rounded-lg px-3 py-2 text-sidebar-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <item.icon className="h-5 w-5" />
-                <span>{item.title}</span>
-              </div>
-              <span className="text-xs text-muted-foreground pl-8">
-                {item.description}
-              </span>
-            </Link>
-          ))}
-        </div>
-      </nav>
-      
-      <div className="absolute bottom-4 left-0 w-full px-4">
-        <div className="rounded-lg bg-muted p-4 text-center text-sm">
-          <p className="text-muted-foreground">ELM327 Emulator Web API</p>
-          <p className="text-xs text-muted-foreground mt-1">Version 1.0.0</p>
-        </div>
-      </div>
-    </div>
+    <SidebarRoot>
+      <SidebarContent className="flex flex-col h-full">
+        <SidebarHeader>
+          <div className="flex h-14 items-center px-4 font-semibold">
+            <span className="text-lg">ELM327 Emulator</span>
+          </div>
+        </SidebarHeader>
+        
+        <ScrollArea className="flex-1">
+          <SidebarMenu>
+            {SidebarItems.map((item) => (
+              <SidebarMenuItem key={item.href}>
+                <Link href={item.href} passHref legacyBehavior>
+                  <SidebarMenuButton asChild>
+                    <a className="w-full flex items-center">
+                      <item.icon className="h-4 w-4 mr-2" />
+                      <div className="flex flex-col flex-1">
+                        <span>{item.title}</span>
+                        <span className="text-xs text-muted-foreground">{item.description}</span>
+                      </div>
+                    </a>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </ScrollArea>
+
+        <SidebarFooter className="border-t">
+          <div className="flex items-center justify-between p-4">
+            <div>
+              <p className="text-sm font-medium">ELM327 Emulator</p>
+              <p className="text-xs text-muted-foreground">v1.0.0</p>
+            </div>
+          </div>
+        </SidebarFooter>
+      </SidebarContent>
+    </SidebarRoot>
   );
 }
