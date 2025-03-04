@@ -202,3 +202,32 @@
 .font-mono::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .flex {
+    flex-direction: column;
+  }
+  .flex-1 {
+    padding-left: 0;
+  }
+  .pl-64 {
+    padding-left: 0;
+  }
+  .sticky {
+    position: relative;
+  }
+  .h-16 {
+    height: auto;
+  }
+  .py-6 {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
