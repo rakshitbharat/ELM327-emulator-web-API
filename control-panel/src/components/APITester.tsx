@@ -1,126 +1,60 @@
 "use client";
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { api } from '@/lib/api';
-import { PROTOCOLS } from '@/lib/constants';
-
-interface APIResponse {
-  status: string;
-  response?: string;
-  execution_time?: number;
-  error?: string;
-}
 
 export function APITester() {
   const [command, setCommand] = useState('');
-  const [protocol, setProtocol] = useState('auto');
-  const [response, setResponse] = useState<APIResponse | null>(null);
+  const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSendCommand = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!command.trim()) return;
-    
+
     setLoading(true);
     try {
-      const result = await api.sendCommand({ 
-        command: command.trim(),
-        protocol
-      });
-      setResponse(result);
+      const result = await api.sendCommand({ command });
+      setResponse(JSON.stringify(result, null, 2));
     } catch (error) {
-      setResponse({
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Failed to send command'
-      });
+      setResponse(JSON.stringify({ error: 'Failed to send command' }, null, 2));
     } finally {
       setLoading(false);
     }
   };
 
-  const commonCommands = [
-    { label: 'ATZ (Reset)', command: 'ATZ' },
-    { label: 'AT SP0 (Auto Protocol)', command: 'AT SP0' },
-    { label: 'AT RV (Read Voltage)', command: 'AT RV' },
-    { label: 'AT I (Version)', command: 'AT I' },
-    { label: '01 00 (Available PIDs)', command: '01 00' },
-    { label: '01 0C (Engine RPM)', command: '01 0C' },
-    { label: '01 0D (Vehicle Speed)', command: '01 0D' },
-    { label: '01 11 (Throttle Position)', command: '01 11' },
-  ];
-
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>API Command Tester</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Protocol</label>
-          <Select value={protocol} onValueChange={setProtocol}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select Protocol" />
-            </SelectTrigger>
-            <SelectContent>
-              {PROTOCOLS.map((p) => (
-                <SelectItem key={p.value} value={p.value}>
-                  {p.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+    <div className="space-y-4">
+      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
+        <div className="flex-1">
+          <Input
+            value={command}
+            onChange={(e) => setCommand(e.target.value)}
+            placeholder="Enter OBD-II command (e.g., '01 0C' for RPM)"
+            className="h-9 bg-black/20 border-zinc-800"
+          />
         </div>
+        <Button 
+          type="submit" 
+          disabled={loading}
+          variant="outline"
+          className="shrink-0 h-9 px-4 bg-black/20 border-zinc-800 hover:bg-black/40"
+        >
+          {loading ? 'Sending...' : 'Send Command'}
+        </Button>
+      </form>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Command</label>
-          <div className="flex space-x-2">
-            <Input
-              value={command}
-              onChange={(e) => setCommand(e.target.value)}
-              placeholder="Enter OBD-II command (e.g., 01 0C for RPM)"
-              onKeyPress={(e) => e.key === 'Enter' && handleSendCommand()}
-            />
-            <Button 
-              onClick={handleSendCommand}
-              disabled={loading || !command.trim()}
-            >
-              Send
-            </Button>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Common Commands</label>
-          <div className="flex flex-wrap gap-2">
-            {commonCommands.map((cmd) => (
-              <Button
-                key={cmd.command}
-                variant="outline"
-                size="sm"
-                onClick={() => setCommand(cmd.command)}
-              >
-                {cmd.label}
-              </Button>
-            ))}
-          </div>
-        </div>
-
-        {response && (
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Response</label>
-            <Card className="bg-muted">
-              <CardContent className="p-4">
-                <pre className="whitespace-pre-wrap font-mono text-sm">
-                  {JSON.stringify(response, null, 2)}
-                </pre>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      <div className="relative min-h-[200px] rounded-lg border border-zinc-800 bg-black/20">
+        <ScrollArea className="h-[200px] w-full rounded-md">
+          <pre className="p-4 text-sm font-mono text-muted-foreground">
+            {response || 'Response will appear here...'}
+          </pre>
+        </ScrollArea>
+      </div>
+    </div>
   );
 }

@@ -114,77 +114,78 @@ function ControlPanel() {
   };
 
   return (
-    <div className="container mx-auto space-y-6 p-4 md:p-6 max-w-7xl">
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="col-span-full lg:col-span-2 transition-all hover:shadow-md hover:border-primary/50">
-          <CardHeader>
-            <CardTitle>Live ECU Parameters</CardTitle>
-            <CardDescription>Real-time monitoring of engine control unit parameters</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="parameters" className="space-y-4">
-              <TabsList className="bg-black/20">
-                <TabsTrigger value="parameters">Parameters</TabsTrigger>
-                <TabsTrigger value="api-tester">AT Commands</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="parameters">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {Object.entries(values).map(([parameter, value]) => {
-                    const meta = parameterMeta[parameter as keyof typeof parameterMeta];
-                    return (
-                      <Card key={parameter} className="bg-black/40 border-zinc-800 backdrop-blur">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                          <CardTitle className="text-sm font-mono">
-                            {parameter.toUpperCase().replace(/_/g, ' ')}
-                          </CardTitle>
-                          <LED active={value > 0} color={value > (meta.max * 0.8) ? "red" : "green"} />
-                        </CardHeader>
-                        <CardContent>
-                          <VoltMeter 
-                            value={value} 
-                            max={meta.max} 
-                            min={hasMinProperty(meta) ? meta.min : 0} 
-                          />
-                          <div className="mt-4">
-                            <ParameterControl
-                              parameter={parameter}
-                              value={value}
-                              onChange={handleValueChange}
-                              protocol={protocol}
-                            />
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+    <div className="container max-w-7xl mx-auto p-4 lg:p-6 space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
+        {Object.entries(values).map(([parameter, value]) => {
+          const meta = parameterMeta[parameter as keyof typeof parameterMeta];
+          return (
+            <Card key={parameter} className="w-full h-full min-h-[200px] bg-black/40 border-zinc-800 backdrop-blur">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-mono">
+                  {parameter.toUpperCase().replace(/_/g, ' ')}
+                </CardTitle>
+                <LED active={value > 0} color={value > (meta.max * 0.8) ? "red" : "green"} />
+              </CardHeader>
+              <CardContent>
+                <VoltMeter 
+                  value={value} 
+                  max={meta.max} 
+                  min={hasMinProperty(meta) ? meta.min : 0} 
+                />
+                <div className="mt-4">
+                  <ParameterControl
+                    parameter={parameter}
+                    value={value}
+                    onChange={handleValueChange}
+                    protocol={protocol}
+                  />
                 </div>
-              </TabsContent>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
 
-              <TabsContent value="api-tester">
-                <APITester />
-              </TabsContent>
-            </Tabs>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+        <Card className="lg:col-span-2 bg-black/40 border-zinc-800">
+          <CardHeader>
+            <CardTitle>API Tester</CardTitle>
+            <CardDescription>Send custom OBD-II commands</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <APITester />
           </CardContent>
         </Card>
 
-        <Card className="transition-all hover:shadow-md hover:border-primary/50">
+        <Card className="bg-black/40 border-zinc-800">
           <CardHeader>
-            <CardTitle>Quick Stats</CardTitle>
-            <CardDescription>Overview of key metrics</CardDescription>
+            <CardTitle>Protocol Settings</CardTitle>
+            <CardDescription>Configure communication protocol</CardDescription>
           </CardHeader>
-          <CardContent>
-            {/* Add your quick stats here */}
-          </CardContent>
-        </Card>
+          <CardContent className="space-y-4">
+            <Select
+              value={protocol}
+              onValueChange={handleProtocolChange}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select Protocol" />
+              </SelectTrigger>
+              <SelectContent>
+                {PROTOCOLS.map((p) => (
+                  <SelectItem key={p.value} value={p.value}>
+                    {p.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-        <Card className="col-span-full transition-all hover:shadow-md hover:border-primary/50">
-          <CardHeader>
-            <CardTitle>Command History</CardTitle>
-            <CardDescription>Recent OBD-II commands and responses</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {/* Add your command history here */}
+            <Button 
+              variant="outline" 
+              onClick={handleReset}
+              className="w-full"
+            >
+              Reset All Values
+            </Button>
           </CardContent>
         </Card>
       </div>

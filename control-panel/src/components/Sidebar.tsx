@@ -100,13 +100,13 @@ export function Sidebar() {
   
   return (
     <SidebarRoot>
-      <SidebarContent className="flex flex-col h-full bg-gradient-to-b from-background via-background/95 to-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <SidebarHeader className="border-b border-border/50 px-6 py-4">
+      <SidebarContent className="flex flex-col h-full bg-zinc-900/95 border-r border-zinc-800/40">
+        <SidebarHeader className="border-b border-zinc-800/40 px-6 py-4">
           <div className="flex items-center gap-2">
             <CarFront className="h-6 w-6 text-primary animate-pulse-glow" />
             <div className="flex flex-col">
-              <span className="text-lg font-semibold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary/90 to-primary">ELM327</span>
-              <span className="text-xs font-medium text-muted-foreground">Emulator Web API</span>
+              <span className="text-lg font-semibold tracking-tight text-zinc-100">ELM327</span>
+              <span className="text-sm font-medium text-zinc-400">Emulator Web API</span>
             </div>
           </div>
         </SidebarHeader>
@@ -123,24 +123,26 @@ export function Sidebar() {
                       isActive={isActive}
                       className={cn(
                         "w-full transition-all duration-200",
-                        "hover:bg-accent/50 active:bg-accent",
+                        "hover:bg-zinc-800/80 hover:text-zinc-100",
                         "group flex flex-col gap-1 rounded-lg px-3 py-2.5",
                         "border border-transparent",
-                        isActive && "bg-accent/50 border-border/50 shadow-sm"
+                        isActive && "bg-zinc-800 border-zinc-700/50 shadow-sm"
                       )}
                     >
                       <a className="flex items-start gap-3">
                         <item.icon className={cn(
                           "h-5 w-5 shrink-0 mt-0.5",
-                          isActive ? "text-primary" : "text-muted-foreground/70",
-                          "group-hover:text-primary/80 transition-colors"
+                          isActive ? "text-primary" : "text-zinc-400",
+                          "group-hover:text-primary transition-colors"
                         )} />
                         <div className="flex flex-col gap-1 min-w-0">
-                          <span className="font-medium leading-none truncate">{item.title}</span>
+                          <span className="font-medium leading-none text-zinc-100">
+                            {item.title}
+                          </span>
                           <span className={cn(
-                            "text-xs leading-none truncate",
-                            isActive ? "text-muted-foreground" : "text-muted-foreground/60",
-                            "group-hover:text-muted-foreground transition-colors"
+                            "text-sm leading-none",
+                            isActive ? "text-zinc-300" : "text-zinc-500",
+                            "group-hover:text-zinc-300 transition-colors"
                           )}>
                             {item.description}
                           </span>
@@ -154,16 +156,16 @@ export function Sidebar() {
           </SidebarMenu>
         </ScrollArea>
 
-        <SidebarFooter className="border-t border-border/50 bg-muted/20 backdrop-blur supports-[backdrop-filter]:bg-background/40">
+        <SidebarFooter className="border-t border-zinc-800/40 bg-zinc-900/50">
           <div className="p-4 flex flex-col gap-3">
             <div>
-              <h4 className="text-sm font-medium">ELM327 Emulator</h4>
-              <p className="text-xs text-muted-foreground">Developed with ❤️</p>
+              <h4 className="text-sm font-medium text-zinc-100">ELM327 Emulator</h4>
+              <p className="text-sm text-zinc-400">Developed with ❤️</p>
             </div>
             <Button
               variant="secondary"
               size="sm"
-              className="w-full justify-start gap-2 h-8"
+              className="w-full justify-start gap-2 h-8 bg-zinc-800/80 hover:bg-zinc-800 text-zinc-100"
               onClick={() => window.open("https://github.com/rakshitbharat/ELM327-emulator-web-API", "_blank")}
             >
               <Github className="h-4 w-4" />
