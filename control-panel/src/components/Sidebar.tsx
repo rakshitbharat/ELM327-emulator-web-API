@@ -13,7 +13,8 @@ import {
   Terminal,
   History,
   BookMarked,
-  CarFront
+  CarFront,
+  PanelLeftIcon
 } from "lucide-react";
 
 import {
@@ -96,18 +97,38 @@ const SidebarItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { state } = useSidebar();
+  const { state, toggleSidebar } = useSidebar();
+  const isCollapsed = state === "collapsed";
   
   return (
     <SidebarRoot>
-      <SidebarContent className="flex flex-col h-full bg-zinc-900/95 border-r border-zinc-800/40">
-        <SidebarHeader className="border-b border-zinc-800/40 px-6 py-4">
-          <div className="flex items-center gap-2">
-            <CarFront className="h-6 w-6 text-primary animate-pulse-glow" />
-            <div className="flex flex-col">
-              <span className="text-lg font-semibold tracking-tight text-white">ELM327</span>
-              <span className="text-sm font-medium text-zinc-200">Emulator Web API</span>
-            </div>
+      <SidebarContent className={cn(
+        "flex flex-col h-full bg-zinc-900/95 border-r border-zinc-800/40",
+        "transition-all duration-300",
+        isCollapsed ? "w-[4rem]" : "w-[280px]"
+      )}>
+        <SidebarHeader className="border-b border-zinc-800/40 px-4 py-4">
+          <div className="flex items-center justify-between">
+            {!isCollapsed && (
+              <div className="flex items-center gap-2">
+                <CarFront className="h-6 w-6 text-primary animate-pulse-glow" />
+                <div className="flex flex-col">
+                  <span className="text-lg font-semibold tracking-tight text-white">ELM327</span>
+                  <span className="text-sm font-medium text-zinc-200">Emulator</span>
+                </div>
+              </div>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleSidebar}
+              className="text-zinc-400 hover:text-white"
+            >
+              <PanelLeftIcon className={cn(
+                "h-4 w-4 transition-transform",
+                isCollapsed && "rotate-180"
+              )} />
+            </Button>
           </div>
         </SidebarHeader>
         
@@ -124,29 +145,31 @@ export function Sidebar() {
                       className={cn(
                         "w-full transition-all duration-200",
                         "hover:bg-zinc-800 hover:text-white",
-                        "group flex flex-col gap-1 rounded-lg px-3 py-2.5",
+                        "group flex items-center gap-3 rounded-lg px-3 py-2.5",
                         "border border-transparent",
                         isActive && "bg-zinc-800 border-zinc-700 shadow-sm"
                       )}
                     >
-                      <a className="flex items-start gap-3">
+                      <a className="flex items-center gap-3 min-w-0">
                         <item.icon className={cn(
-                          "h-5 w-5 shrink-0 mt-0.5",
+                          "h-5 w-5 shrink-0",
                           isActive ? "text-primary" : "text-zinc-400",
                           "group-hover:text-primary transition-colors"
                         )} />
-                        <div className="flex flex-col gap-1 min-w-0">
-                          <span className="font-medium leading-none text-white">
-                            {item.title}
-                          </span>
-                          <span className={cn(
-                            "text-sm leading-none",
-                            isActive ? "text-zinc-200" : "text-zinc-300",
-                            "group-hover:text-zinc-100 transition-colors"
-                          )}>
-                            {item.description}
-                          </span>
-                        </div>
+                        {!isCollapsed && (
+                          <div className="flex flex-col gap-1 flex-1 overflow-hidden">
+                            <span className="font-medium leading-none text-white truncate">
+                              {item.title}
+                            </span>
+                            <span className={cn(
+                              "text-sm leading-none truncate",
+                              isActive ? "text-zinc-200" : "text-zinc-300",
+                              "group-hover:text-zinc-100 transition-colors"
+                            )}>
+                              {item.description}
+                            </span>
+                          </div>
+                        )}
                       </a>
                     </SidebarMenuButton>
                   </Link>
@@ -157,20 +180,27 @@ export function Sidebar() {
         </ScrollArea>
 
         <SidebarFooter className="border-t border-zinc-800/40 bg-zinc-900/50">
-          <div className="p-4 flex flex-col gap-3">
-            <div>
-              <h4 className="text-sm font-medium text-white">ELM327 Emulator</h4>
-              <p className="text-sm text-zinc-200">Developed with ❤️</p>
-            </div>
-            <Button
-              variant="secondary"
-              size="sm"
-              className="w-full justify-start gap-2 h-8 bg-zinc-800 hover:bg-zinc-700 text-white"
-              onClick={() => window.open("https://github.com/rakshitbharat/ELM327-emulator-web-API", "_blank")}
-            >
-              <Github className="h-4 w-4" />
-              Star on GitHub
-            </Button>
+          <div className={cn(
+            "p-4 flex flex-col gap-3",
+            isCollapsed && "items-center"
+          )}>
+            {!isCollapsed && (
+              <>
+                <div>
+                  <h4 className="text-sm font-medium text-white">ELM327 Emulator</h4>
+                  <p className="text-sm text-zinc-200">Developed with ❤️</p>
+                </div>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="w-full justify-start gap-2 h-8 bg-zinc-800 hover:bg-zinc-700 text-white"
+                  onClick={() => window.open("https://github.com/rakshitbharat/ELM327-emulator-web-API", "_blank")}
+                >
+                  <Github className="h-4 w-4" />
+                  Star on GitHub
+                </Button>
+              </>
+            )}
           </div>
         </SidebarFooter>
       </SidebarContent>

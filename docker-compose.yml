@@ -27,6 +27,7 @@ services:
     environment:
       - NEXT_PUBLIC_API_URL=http://backend:8000
       - NODE_ENV=development
+      - BUN_INSTALL_CACHE=/app/.bun
     depends_on:
       - backend
     init: true
