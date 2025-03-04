@@ -27,7 +27,7 @@
 
 @layer base {
   * {
-    @apply border-[hsl(var(--border))] ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+    @apply border-[hsl(var(--border))] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
   body {
     @apply bg-background text-foreground;
