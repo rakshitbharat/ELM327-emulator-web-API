@@ -10,12 +10,9 @@ export const metadata: Metadata = {
   description: "Control and monitor ECU parameters through OBD-II commands",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
+    // This is the correct way in App Router
     <html lang="en" suppressHydrationWarning className="dark">
       <body className="font-sans antialiased bg-background text-foreground">
         <HeaderControls />
