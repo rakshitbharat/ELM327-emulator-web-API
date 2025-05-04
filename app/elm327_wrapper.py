@@ -2,6 +2,7 @@ import logging
 from typing import Optional, Union, List, Dict, Tuple # Added Tuple
 from elm.elm import Elm # Only import Elm
 import time
+import re # Import the regex module
 
 class ELM327Wrapper:
     # Define supported parameters and their ranges
@@ -65,8 +66,8 @@ class ELM327Wrapper:
         
         return True
 
-    def process_command(self, command: str, protocol: str = 'auto') -> Union[str, List[str], Tuple[str, ...]]:
-        """Process an OBD command through the ELM327 emulator, returning the raw response."""
+    def process_command(self, command: str, protocol: str = 'auto') -> Union[List[str], str]: # Return List[str] or error string
+        """Process an OBD command, filter the response, and return relevant lines."""
         start = time.time()
         raw_response: Union[str, List[str], Tuple[str, ...]] = ""
         try:
@@ -95,12 +96,57 @@ class ELM327Wrapper:
             self.logger.info(f"Processing command: {command}")
             raw_response = self.emulator.handle_request(command)
             self.logger.info(f"Raw command response: {raw_response}")
-            # Return the raw response directly
-            return raw_response
+
+            # --- Filter the raw response --- 
+            filtered_lines = []
+            items_to_filter: List[str] = []
+            if isinstance(raw_response, str):
+                items_to_filter.append(raw_response)
+            elif isinstance(raw_response, (list, tuple)):
+                items_to_filter.extend([str(item) for item in raw_response]) # Ensure all are strings
+
+            known_headers = {'7e0', '7e8', '7ea'} # Add more if needed
+            command_lower = command.lower()
+            # Regex to remove any <...> tags
+            tag_regex = re.compile(r'<[^>]+>')
+
+            for line in items_to_filter:
+                # Remove tags first
+                line_no_tags = tag_regex.sub('', line).strip()
+                
+                cleaned_line = line_no_tags
+                if not cleaned_line: # Skip empty lines after tag removal
+                    continue
+                
+                cleaned_line_lower = cleaned_line.lower()
+                if cleaned_line_lower in known_headers: # Skip known headers
+                    continue
+                if cleaned_line_lower == command_lower: # Skip echoed command
+                    continue
+                
+                # Keep the line if it passed filters
+                filtered_lines.append(cleaned_line) 
+            # ----------------------------- 
+
+            self.logger.info(f"Filtered response lines: {filtered_lines}")
+            # Add the prompt '>' if it was the last part of the original response
+            # and not already present in the filtered lines
+            # Use \r> for ELM327 serial style termination
+            if items_to_filter and items_to_filter[-1].strip().endswith('>') and (not filtered_lines or not filtered_lines[-1].endswith('>')):
+                 # Check if the last original item *only* contained '>' after stripping tags
+                 last_item_cleaned = tag_regex.sub('', items_to_filter[-1]).strip()
+                 if last_item_cleaned == '>':
+                     # If the last raw item was just the prompt, add \r>
+                     filtered_lines.append('\r>') 
+                 elif not filtered_lines[-1].endswith('>'): # Avoid double prompts
+                     # If the last filtered line doesn't end with '>', append \r>
+                     filtered_lines.append('\r>') 
+
+            return filtered_lines # Return the list of filtered lines
+
         except Exception as e:
             self.logger.error(f"Error processing command '{command}': {e}", exc_info=True)
-            # Return an error string or raise an exception consistent with expected return types
-            return f"ERROR: {str(e)}"
+            return f"ERROR: {str(e)}" # Return error string
         finally:
             self.last_execution_time = time.time() - start
 
