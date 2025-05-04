@@ -8,7 +8,6 @@ const nextConfig: NextConfig = {
   transpilePackages: ['geist'],
   // Enable font optimization and use PostCSS config file
   experimental: {
-    optimizeFonts: true,
   }
 };
 
