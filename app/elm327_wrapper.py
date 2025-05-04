@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, Union, List, Dict
+from typing import Optional, Union, List, Dict, Tuple # Added Tuple
 from elm.elm import Elm # Only import Elm
 import time
 
@@ -44,42 +44,12 @@ class ELM327Wrapper:
         # Initialize emulator
         self.emulator = Elm(serial_port=None, batch_mode=True)
         self.emulator.logger = self.logger
-        # Ensure the emulator has an ECU instance (check existence, not type)
-        if not hasattr(self.emulator, 'ecu') or self.emulator.ecu is None:
-             # This path likely indicates an issue with the library's initialization
-             # if it's supposed to always create an ECU.
-             # Log an error or raise an exception might be better than trying to create one.
-             self.logger.error("Emulator instance does not have an 'ecu' attribute after initialization!")
-             # Optionally, raise an exception to prevent startup with a broken state:
-             # raise RuntimeError("Emulator failed to initialize its ECU component.")
-             # For now, log a warning and proceed, but this might cause issues later.
-             self.logger.warning("Proceeding without a guaranteed ECU instance.")
 
         self.last_execution_time = 0.0
 
-        # Initialize parameter values dictionary
+        # Initialize parameter values dictionary (local wrapper state)
         self._parameter_values = {param: min_val for param, (min_val, _) in self.SUPPORTED_PARAMETERS.items()}
-
-        # --- Initialize the actual emulator's ECU state ---
-        self.logger.info("Initializing emulator ECU values...")
-        # Check if ecu exists before trying to set values
-        if hasattr(self.emulator, 'ecu') and self.emulator.ecu is not None:
-            for parameter, value in self._parameter_values.items():
-                pid = self.PARAMETER_TO_PID.get(parameter)
-                if pid:
-                    try:
-                        # Convert value based on PID if necessary (example for temp)
-                        # Note: The emulator library might handle some conversions,
-                        # but explicit setting ensures correctness.
-                        # We'll set the raw value for now, assuming the library handles encoding.
-                        self.emulator.ecu.set_pid_value(pid, value)
-                        self.logger.debug(f"Initialized emulator PID {pid} ({parameter}) to {value}")
-                    except Exception as e:
-                        self.logger.error(f"Failed to initialize emulator PID {pid} ({parameter}): {e}")
-            self.logger.info("Emulator ECU values initialized.")
-        else:
-            self.logger.warning("Skipping ECU value initialization because emulator.ecu is missing.")
-        # ----------------------------------------------------
+        self.logger.info(f"Initialized local parameter values: {self._parameter_values}")
 
 
     def _validate_parameter(self, parameter: str, value: float) -> bool:
@@ -95,9 +65,10 @@ class ELM327Wrapper:
         
         return True
 
-    def process_command(self, command: str, protocol: str = 'auto') -> str:
-        """Process an OBD command through the ELM327 emulator"""
+    def process_command(self, command: str, protocol: str = 'auto') -> Union[str, List[str], Tuple[str, ...]]:
+        """Process an OBD command through the ELM327 emulator, returning the raw response."""
         start = time.time()
+        raw_response: Union[str, List[str], Tuple[str, ...]] = ""
         try:
             if protocol.lower() != 'auto':
                 # Set protocol using AT SP command
@@ -122,13 +93,13 @@ class ELM327Wrapper:
 
             # Let the emulator handle the command
             self.logger.info(f"Processing command: {command}")
-            response = self.emulator.handle_request(command)
-            self.logger.info(f"Command response: {response}")
-            return response if isinstance(response, str) else "\n".join(response)
+            raw_response = self.emulator.handle_request(command)
+            self.logger.info(f"Raw command response: {raw_response}")
+            # Return the raw response directly
+            return raw_response
         except Exception as e:
             self.logger.error(f"Error processing command '{command}': {e}", exc_info=True)
-            # Re-raise or return an error message
-            # For API consistency, maybe return a formatted error string
+            # Return an error string or raise an exception consistent with expected return types
             return f"ERROR: {str(e)}"
         finally:
             self.last_execution_time = time.time() - start
@@ -139,36 +110,37 @@ class ELM327Wrapper:
             return False
 
         pid = self.PARAMETER_TO_PID.get(parameter)
-        if not pid:
-            # Handle parameters that might not have a direct PID or require special handling
-            # For now, just store locally if no PID mapping
-            self.logger.warning(f"Parameter '{parameter}' has no direct PID mapping. Storing locally only.")
-            try:
-                self._parameter_values[parameter] = value
-                return True
-            except Exception as e:
-                 self.logger.error(f"Error setting local parameter {parameter}: {str(e)}")
-                 return False
-
+        # Store the value internally in the wrapper first
         try:
-            # Store the value internally in the wrapper
             self._parameter_values[parameter] = value
-            self.logger.info(f"Set local value for {parameter} (PID {pid}) to {value}")
+            self.logger.info(f"Set local value for {parameter} to {value}")
+        except Exception as e:
+             self.logger.error(f"Error setting local parameter {parameter}: {str(e)}")
+             return False # Fail if local storage fails
 
-            # --- Set the value in the actual emulator's ECU state ---
-            # Check if ecu exists before trying to set value
+        # If no PID mapping, we are done (only stored locally)
+        if not pid:
+            self.logger.warning(f"Parameter '{parameter}' has no direct PID mapping. Stored locally only.")
+            return True
+
+        # --- Try to set the value in the actual emulator's ECU state ---
+        try:
+            # Check for the ecu attribute *now*
             if hasattr(self.emulator, 'ecu') and self.emulator.ecu is not None:
                 self.emulator.ecu.set_pid_value(pid, value)
                 self.logger.info(f"Updated emulator PID {pid} value to {value}")
+                return True
             else:
-                self.logger.warning(f"Cannot set PID {pid} value in emulator: emulator.ecu is missing.")
-                # Decide if this should be considered a failure
-                # return False # Uncomment if setting emulator state is critical
-            # -------------------------------------------------------
-            return True
+                # Log that we couldn't update the emulator state
+                self.logger.warning(f"Cannot set PID {pid} value in emulator: emulator.ecu is missing at time of call.")
+                # Decide if this should be considered a failure. 
+                # For now, return True as the local value was set.
+                return True 
         except Exception as e:
-            self.logger.error(f"Error setting parameter {parameter} (PID {pid}): {str(e)}")
+            self.logger.error(f"Error setting emulator PID {pid} for parameter {parameter}: {str(e)}")
+            # Return False as updating the emulator failed
             return False
+        # -------------------------------------------------------
 
     def get_ecu_value(self, parameter: str) -> Optional[float]:
         """Get an ECU parameter value"""
