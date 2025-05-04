@@ -13,8 +13,7 @@ COPY requirements.txt .
 
 # Install dependencies and ELM327-emulator
 RUN pip install --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir git+https://github.com/Ircama/ELM327-emulator.git
+    pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
